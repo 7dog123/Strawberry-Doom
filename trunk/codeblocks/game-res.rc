@@ -11,10 +11,10 @@ FILETYPE 1
   {
    VALUE "FileVersion", "1.3.0"
    VALUE "FileDescription", "1.3.0"
-   VALUE "InternalName", "Chocolate-Doom"
-   VALUE "CompanyName", "Chocolate-Doom"
+   VALUE "InternalName", "Strawberry-Doom"
+   VALUE "CompanyName", "Strawberry-Doom"
    VALUE "LegalCopyright", "GNU General Public License"
-   VALUE "ProductName", "Chocolate-Doom"
+   VALUE "ProductName", "Strawberry-Doom"
    VALUE "ProductVersion", "1.3.0"
   }
  }

@@ -306,7 +306,7 @@ static NSString *AppendQuotedFilename(NSString *str, NSString *fileName)
     [self saveConfig];
 
     [self->iwadController setEnvironment];
-    ExecuteProgram("chocolate-setup", NULL, NULL);
+    ExecuteProgram("strawberry-setup", NULL, NULL);
 }
 
 // Invoked when the "Terminal" option is selected from the menu, to open

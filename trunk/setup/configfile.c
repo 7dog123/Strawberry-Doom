@@ -81,14 +81,14 @@ void M_MakeDirectory(char *path)
 // M_SetConfigDir:
 //
 // Sets the location of the configuration directory, where configuration
-// files are stored - default.cfg, chocolate-doom.cfg, savegames, etc.
+// files are stored - default.cfg, strawberry-doom.cfg, savegames, etc.
 //
 
 void M_SetConfigDir(void)
 {
 #if !defined(_WIN32) || defined(_WIN32_WCE)
 
-    // Configuration settings are stored in ~/.chocolate-doom/,
+    // Configuration settings are stored in ~/.strawberry-doom/,
     // except on Windows, where we behave like Vanilla Doom and
     // save in the current directory.
 
@@ -638,7 +638,7 @@ void M_SaveMainDefaults(char *filename)
 }
 
 // 
-// Save extra (chocolate-doom.cfg) defaults to a given file
+// Save extra (strawberry-doom.cfg) defaults to a given file
 // 
 
 void M_SaveExtraDefaults(char *filename)
