@@ -1,3 +1,8 @@
+2010-06-29 00:45:40 
+
+	Strawberry Doom:
+		Return where V_DrawPatch would error out, so us experts can use our sensitivities of 100+ with no accidental option menu hits.
+
 2010-06-29 00:36:39 
 
 	Strawberry Doom:
