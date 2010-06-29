@@ -199,14 +199,14 @@ static void TXT_DropdownListDrawer(TXT_UNCAST_ARG(list), int selected)
 
     if (selected) 
     {
-        TXT_BGColor(TXT_COLOR_GREY, 0);
+        TXT_BGColor(TXT_COLORSET_SELECTEDBG, 0);
     }
     else
     {
-        TXT_BGColor(TXT_COLOR_BLUE, 0);
+        TXT_BGColor(TXT_COLORSET_BUTTONBG, 0);
     }
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
+    TXT_FGColor(TXT_COLORSET_BUTTONFG);
 
     // Select a string to draw from the list, if the current value is
     // in range.  Otherwise fall back to a default.

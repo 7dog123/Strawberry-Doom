@@ -76,7 +76,7 @@ static void DrawDesktopBackground(const char *title)
     for (i=0; i<TXT_SCREEN_W * TXT_SCREEN_H; ++i)
     {
         *p++ = 0xb1;
-        *p++ = TXT_COLOR_GREY | (TXT_COLOR_BLUE << 4);
+        *p++ = TXT_COLORSET_BACKGROUND;
     }
 
     // Draw the top and bottom banners
@@ -86,7 +86,7 @@ static void DrawDesktopBackground(const char *title)
     for (i=0; i<TXT_SCREEN_W; ++i)
     {
         *p++ = ' ';
-        *p++ = TXT_COLOR_BLACK | (TXT_COLOR_GREY << 4);
+        *p++ = TXT_COLORSET_TOPBOTBANNER;
     }
 
     p = screendata + (TXT_SCREEN_H - 1) * TXT_SCREEN_W * 2;
@@ -94,14 +94,14 @@ static void DrawDesktopBackground(const char *title)
     for (i=0; i<TXT_SCREEN_W; ++i)
     {
         *p++ = ' ';
-        *p++ = TXT_COLOR_BLACK | (TXT_COLOR_GREY << 4);
+        *p++ = TXT_COLORSET_TOPBOTBANNER;
     }
 
     // Print the title
 
     TXT_GotoXY(0, 0);
-    TXT_FGColor(TXT_COLOR_BLACK);
-    TXT_BGColor(TXT_COLOR_GREY, 0);
+    TXT_FGColor(TXT_COLORSET_TITLEBANNERFG);
+    TXT_BGColor(TXT_COLORSET_TITLEBANNERBG, 0);
 
     TXT_PutChar(' ');
     TXT_Puts(title);
@@ -165,8 +165,8 @@ void TXT_DrawASCIITable(void)
 
     screendata = TXT_GetScreenData();
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
-    TXT_BGColor(TXT_COLOR_BLACK, 0);
+    TXT_FGColor(TXT_COLORSET_ASCIIFG);
+    TXT_BGColor(TXT_COLORSET_ASCIIBG, 0);
 
     for (y=0; y<16; ++y)
     {

@@ -1,3 +1,8 @@
+2010-06-28 23:50:47 GhostlyDeath
+
+	Strawberry Doom:
+		Change color handling in textscreen stuff so that it's more universalized so we don't have to spend shit loads of time trying to change colors around even though it will never change.
+
 2010-01-31 18:21:50 fraggle
 	
 	Change Windows resource file to use PACKAGE_COPYRIGHT and

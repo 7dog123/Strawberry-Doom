@@ -148,26 +148,26 @@ static void TXT_SpinControlDrawer(TXT_UNCAST_ARG(spincontrol), int selected)
     unsigned int i;
     unsigned int padding;
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_CYAN);
-    TXT_BGColor(TXT_COLOR_BLUE, 0);
+    TXT_FGColor(TXT_COLORSET_CHECKBOXSIDEFG);
+    TXT_BGColor(TXT_COLORSET_TEXTBOXBG, 0);
 
     TXT_DrawString("\x1b ");
     
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
+    TXT_FGColor(TXT_COLORSET_TEXTBOXFG);
 
     // Choose background color
 
     if (selected && spincontrol->editing)
     {
-        TXT_BGColor(TXT_COLOR_BLACK, 0);
+        TXT_BGColor(TXT_COLORSET_EDITINGBOXBG, 0);
     }
     else if (selected)
     {
-        TXT_BGColor(TXT_COLOR_GREY, 0);
+        TXT_BGColor(TXT_COLORSET_SELECTEDBG, 0);
     }
     else
     {
-        TXT_BGColor(TXT_COLOR_BLUE, 0);
+        TXT_BGColor(TXT_COLORSET_TEXTBOXBG, 0);
     }
 
     if (!spincontrol->editing)
@@ -194,8 +194,8 @@ static void TXT_SpinControlDrawer(TXT_UNCAST_ARG(spincontrol), int selected)
         ++i;
     }
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_CYAN);
-    TXT_BGColor(TXT_COLOR_BLUE, 0);
+    TXT_FGColor(TXT_COLORSET_CHECKBOXSIDEFG);
+    TXT_BGColor(TXT_COLORSET_TEXTBOXBG, 0);
     TXT_DrawString(" \x1a");
 }
 

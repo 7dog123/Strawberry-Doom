@@ -108,11 +108,11 @@ static void UpdateGUI(void)
 
     for (i=0; i<MAXPLAYERS; ++i)
     {
-        txt_color_t color = TXT_COLOR_BRIGHT_WHITE;
+        txt_color_t color = TXT_COLORSET_NETPLAYERNAMEFG;
 
         if ((signed) i == net_player_number)
         {
-            color = TXT_COLOR_YELLOW;
+            color = TXT_COLORSET_MYNETPLAYERNAMEFG;
         }
 
         TXT_SetFGColor(player_labels[i], color);

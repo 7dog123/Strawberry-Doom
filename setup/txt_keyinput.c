@@ -120,14 +120,14 @@ static void TXT_KeyInputDrawer(TXT_UNCAST_ARG(key_input), int selected)
 
     if (selected)
     {
-        TXT_BGColor(TXT_COLOR_GREY, 0);
+        TXT_BGColor(TXT_COLORSET_SELECTEDBG, 0);
     }
     else
     {
-        TXT_BGColor(TXT_COLOR_BLUE, 0);
+        TXT_BGColor(TXT_COLORSET_KEYSELBG, 0);
     }
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
+    TXT_FGColor(TXT_COLORSET_KEYSELFG);
     
     TXT_DrawString(buf);
     
