@@ -454,6 +454,7 @@ static void NET_SV_ParseSYN(net_packet_t *packet,
     char *player_name;
     char *client_version;
     int i;
+    char FakeChocoVer[32];
 
     // read the magic number
 
@@ -477,8 +478,11 @@ static void NET_SV_ParseSYN(net_packet_t *packet,
     {
         return;
     }
-
-    if (strcmp(client_version, PACKAGE_STRING) != 0)
+	
+	// GhostlyDeath <June 29, 2010> -- Check vs Chocolate Doom
+	snprintf(FakeChocoVer, 32, "Chocolate Doom %s", PACKAGE_VERSION);
+	
+    if (strcmp(client_version, PACKAGE_STRING) != 0 && strcmp(client_version, FakeChocoVer) != 0)
     {
         //!
         // @category net
@@ -1090,7 +1094,7 @@ void NET_SV_SendQueryResponse(net_addr_t *addr)
 
     // Server description.  This is currently hard-coded.
 
-    querydata.description = "Chocolate Doom server";
+    querydata.description = "Strawberry Doom server";
 
     // Send it and we're done.
 

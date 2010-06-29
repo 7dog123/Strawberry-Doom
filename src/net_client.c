@@ -193,10 +193,8 @@ static void NET_CL_PlayerQuitGame(player_t *player)
     // Do this the same way as Vanilla Doom does, to allow dehacked
     // replacements of this message
 
-    strncpy(exitmsg, DEH_String("Player 1 left the game"), sizeof(exitmsg));
-    exitmsg[sizeof(exitmsg) - 1] = '\0';
-
-    exitmsg[7] += player - players;
+	// GhostlyDeath <June 29, 2010> -- Use player names instead
+	snprintf(exitmsg, 80, "%s left the game", net_player_names[player - players]);
 
     players[consoleplayer].message = exitmsg;
 
