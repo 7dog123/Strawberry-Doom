@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    TXT_SetDesktopTitle("Not Chocolate Doom Setup");
+    TXT_SetDesktopTitle("Not Strawberry Doom Setup");
 
     ScrollingMenu();
     Window2();

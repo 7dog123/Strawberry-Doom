@@ -3,13 +3,13 @@ MANPAGE_GEN_FILES=manpage.template docgen default.cfg.template extra.cfg.templat
 
 if HAVE_PYTHON
 
-man_MANS=chocolate-doom.6      \
-         chocolate-server.6    \
-         chocolate-setup.6     \
+man_MANS=strawberry-doom.6      \
+         strawberry-server.6    \
+         strawberry-setup.6     \
          default.cfg.5         \
          $(PACKAGE).cfg.5
 
-chocolate-doom.6: ../src $(MANPAGE_GEN_FILES)
+strawberry-doom.6: ../src $(MANPAGE_GEN_FILES)
 	./docgen -m manpage.template ../src > $@
 
 default.cfg.5: ../src default.cfg.template

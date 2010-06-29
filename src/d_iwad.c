@@ -704,7 +704,7 @@ static char *SaveGameIWADName(void)
     // Find what subdirectory to use for savegames
     //
     // They should be stored in something like
-    //    ~/.chocolate-doom/savegames/doom.wad/
+    //    ~/.strawberry-doom/savegames/doom.wad/
     //
     // The directory depends on the IWAD, so that savegames for
     // different IWADs are kept separate.

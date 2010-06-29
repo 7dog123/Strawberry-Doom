@@ -12,11 +12,11 @@ FILETYPE 1
   BLOCK "040904E4"
   {
    VALUE "FileVersion", "1.3.0"
-   VALUE "FileDescription", "Chocolate-Doom Setup"
-   VALUE "InternalName", "chocolate-setup"
-   VALUE "CompanyName", "fraggle@gmail.com"
+   VALUE "FileDescription", "Stawberry-Doom Setup"
+   VALUE "InternalName", "strawberry-setup"
+   VALUE "CompanyName", "ghostlydeath@remood.org"
    VALUE "LegalCopyright", "GNU General Public License"
-   VALUE "ProductName", "Chocolate-Doom Setup"
+   VALUE "ProductName", "Strawberry-Doom Setup"
    VALUE "ProductVersion", "1.3.0"
   }
  }
