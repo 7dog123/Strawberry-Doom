@@ -45,6 +45,7 @@
 // Data.
 #include "dstrings.h"
 #include "sounds.h"
+#include "net_client.h"
 
 //
 // Locally used constants, shortcuts.
@@ -452,7 +453,7 @@ void HU_Erase(void)
 
 void HU_Ticker(void)
 {
-
+	char NameBuf[32];
     int i, rc;
     char c;
 
@@ -501,9 +502,9 @@ void HU_Ticker(void)
 			    && (chat_dest[i] == consoleplayer+1
 				|| chat_dest[i] == HU_BROADCAST))
 			{
-			    HUlib_addMessageToSText(&w_message,
-						    DEH_String(player_names[i]),
-						    w_inputbuffer[i].l.l);
+				// GhostlyDeath <June 29, 2010> -- Use net_player_names instead of player_names (GREEN, etc.)
+				snprintf(NameBuf, 32, "%s: ", net_player_names[i]);
+			    HUlib_addMessageToSText(&w_message, NameBuf, w_inputbuffer[i].l.l);
 			    
 			    message_nottobefuckedwith = true;
 			    message_on = true;
