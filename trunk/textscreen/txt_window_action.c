@@ -50,11 +50,11 @@ static void TXT_WindowActionDrawer(TXT_UNCAST_ARG(action), int selected)
 
     TXT_GetKeyDescription(action->key, buf);
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_GREEN);
+    TXT_FGColor(TXT_COLORSET_ACTIONKEYFG);
     TXT_DrawString(buf);
-    TXT_FGColor(TXT_COLOR_BRIGHT_CYAN);
+    TXT_FGColor(TXT_COLORSET_ACTIONEQUALFG);
     TXT_DrawString("=");
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
+    TXT_FGColor(TXT_COLORSET_ACTIONACTIONFG);
     TXT_DrawString(action->label);
 }
 

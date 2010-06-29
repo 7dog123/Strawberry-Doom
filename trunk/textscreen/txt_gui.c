@@ -70,7 +70,7 @@ void TXT_DrawDesktopBackground(const char *title)
     for (i=0; i<TXT_SCREEN_W * TXT_SCREEN_H; ++i)
     {
         *p++ = 0xb1;
-        *p++ = TXT_COLOR_GREY | (TXT_COLOR_BLUE << 4);
+        *p++ = TXT_COLORSET_BACKGROUND;
     }
 
     // Draw the top and bottom banners
@@ -80,7 +80,7 @@ void TXT_DrawDesktopBackground(const char *title)
     for (i=0; i<TXT_SCREEN_W; ++i)
     {
         *p++ = ' ';
-        *p++ = TXT_COLOR_BLACK | (TXT_COLOR_GREY << 4);
+        *p++ = TXT_COLORSET_TOPBOTBANNER;
     }
 
     p = screendata + (TXT_SCREEN_H - 1) * TXT_SCREEN_W * 2;
@@ -88,14 +88,14 @@ void TXT_DrawDesktopBackground(const char *title)
     for (i=0; i<TXT_SCREEN_W; ++i)
     {
         *p++ = ' ';
-        *p++ = TXT_COLOR_BLACK | (TXT_COLOR_GREY << 4);
+        *p++ = TXT_COLORSET_TOPBOTBANNER;
     }
 
     // Print the title
 
     TXT_GotoXY(0, 0);
-    TXT_FGColor(TXT_COLOR_BLACK);
-    TXT_BGColor(TXT_COLOR_GREY, 0);
+    TXT_FGColor(TXT_COLORSET_TITLEBANNERFG);
+    TXT_BGColor(TXT_COLORSET_TITLEBANNERBG, 0);
 
     TXT_DrawString(" ");
     TXT_DrawString(title);
@@ -117,7 +117,7 @@ void TXT_DrawShadow(int x, int y, int w, int h)
         {
             if (VALID_X(x1) && VALID_Y(y1))
             {
-                p[1] = TXT_COLOR_DARK_GREY;
+                p[1] = TXT_COLORSET_SHADOWCOLOR;
             }
 
             p += 2;
@@ -130,8 +130,8 @@ void TXT_DrawWindowFrame(const char *title, int x, int y, int w, int h)
     int x1, y1;
     int bx, by;
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_CYAN);
-    TXT_BGColor(TXT_COLOR_BLUE, 0);
+    TXT_FGColor(TXT_COLORSET_FRAMEFG);
+    TXT_BGColor(TXT_COLORSET_FRAMEBG, 0);
 
     for (y1=y; y1<y+h; ++y1)
     {
@@ -164,8 +164,8 @@ void TXT_DrawWindowFrame(const char *title, int x, int y, int w, int h)
     if (title != NULL)
     {
         TXT_GotoXY(x + 1, y + 1);
-        TXT_BGColor(TXT_COLOR_GREY, 0);
-        TXT_FGColor(TXT_COLOR_BLUE);
+        TXT_BGColor(TXT_COLORSET_TITLEBG, 0);
+        TXT_FGColor(TXT_COLORSET_TITLEFG);
 
         for (x1=0; x1<w-2; ++x1)
         {
@@ -190,8 +190,8 @@ void TXT_DrawSeparator(int x, int y, int w)
 
     data = TXT_GetScreenData();
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_CYAN);
-    TXT_BGColor(TXT_COLOR_BLUE, 0);
+    TXT_FGColor(TXT_COLORSET_FRAMEFG);
+    TXT_BGColor(TXT_COLORSET_FRAMEBG, 0);
 
     if (!VALID_Y(y))
     {
@@ -261,8 +261,8 @@ void TXT_DrawHorizScrollbar(int x, int y, int w, int cursor, int range)
         return;
     }
 
-    TXT_FGColor(TXT_COLOR_BLACK);
-    TXT_BGColor(TXT_COLOR_GREY, 0);
+    TXT_FGColor(TXT_COLORSET_SCROLLFG);
+    TXT_BGColor(TXT_COLORSET_SCROLLBG, 0);
 
     TXT_GotoXY(x, y);
     TXT_PutChar('\x1b');
@@ -307,8 +307,8 @@ void TXT_DrawVertScrollbar(int x, int y, int h, int cursor, int range)
         return;
     }
 
-    TXT_FGColor(TXT_COLOR_BLACK);
-    TXT_BGColor(TXT_COLOR_GREY, 0);
+    TXT_FGColor(TXT_COLORSET_SCROLLFG);
+    TXT_BGColor(TXT_COLORSET_SCROLLBG, 0);
 
     TXT_GotoXY(x, y);
     TXT_PutChar('\x18');

@@ -771,7 +771,7 @@ void MultiplayerConfig(void)
         sprintf(buf, "#%i ", i + 1);
 
         label = TXT_NewLabel(buf);
-        TXT_SetFGColor(label, TXT_COLOR_BRIGHT_CYAN);
+        TXT_SetFGColor(label, TXT_COLORSET_NUMBERLISTFG);
 
         TXT_AddWidgets(table,
                        label,

@@ -58,20 +58,20 @@ static void TXT_InputBoxDrawer(TXT_UNCAST_ARG(inputbox), int selected)
 
     if (inputbox->editing && selected)
     {
-        TXT_BGColor(TXT_COLOR_BLACK, 0);
+        TXT_BGColor(TXT_COLORSET_EDITINGBOXBG, 0);
     }
     else if (selected)
     {
-        TXT_BGColor(TXT_COLOR_GREY, 0);
+        TXT_BGColor(TXT_COLORSET_SELECTEDBG, 0);
     }
     else
     {
         // Not even selected
 
-        TXT_BGColor(TXT_COLOR_BLUE, 0);
+        TXT_BGColor(TXT_COLORSET_TEXTBOXBG, 0);
     }
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
+    TXT_FGColor(TXT_COLORSET_TEXTBOXFG);
 
     if (!inputbox->editing)
     {
@@ -86,7 +86,7 @@ static void TXT_InputBoxDrawer(TXT_UNCAST_ARG(inputbox), int selected)
 
     if (chars < w && inputbox->editing && selected)
     {
-        TXT_BGColor(TXT_COLOR_BLACK, 1);
+        TXT_BGColor(TXT_COLORSET_EDITINGBOXBG, 1);
         TXT_DrawString("_");
         ++chars;
     }

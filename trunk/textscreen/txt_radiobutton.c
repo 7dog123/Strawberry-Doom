@@ -48,11 +48,11 @@ static void TXT_RadioButtonDrawer(TXT_UNCAST_ARG(radiobutton), int selected)
 
     w = radiobutton->widget.w;
 
-    TXT_BGColor(TXT_COLOR_BLUE, 0);
-    TXT_FGColor(TXT_COLOR_BRIGHT_CYAN);
+    TXT_BGColor(TXT_COLORSET_BUTTONBG, 0);
+    TXT_FGColor(TXT_COLORSET_CHECKBOXSIDEFG);
     TXT_DrawString(" (");
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
+    TXT_FGColor(TXT_COLORSET_CHECKBOXPEGFG);
 
     if (*radiobutton->variable == radiobutton->value)
     {
@@ -63,16 +63,16 @@ static void TXT_RadioButtonDrawer(TXT_UNCAST_ARG(radiobutton), int selected)
         TXT_DrawString(" ");
     }
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_CYAN);
+    TXT_FGColor(TXT_COLORSET_CHECKBOXSIDEFG);
 
     TXT_DrawString(") ");
 
     if (selected)
     {
-        TXT_BGColor(TXT_COLOR_GREY, 0);
+        TXT_BGColor(TXT_COLORSET_SELECTEDBG, 0);
     }
 
-    TXT_FGColor(TXT_COLOR_BRIGHT_WHITE);
+    TXT_FGColor(TXT_COLORSET_BUTTONFG);
 
     TXT_DrawString(radiobutton->label);
     
