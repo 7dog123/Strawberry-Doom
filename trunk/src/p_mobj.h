@@ -307,6 +307,7 @@ typedef struct particle_s
     fixed_t		deltax;
     fixed_t		deltay;
     fixed_t		deltaz;
+    int sprite;
     int color;
     int tics;
     

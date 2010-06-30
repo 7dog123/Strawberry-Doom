@@ -524,7 +524,7 @@ void R_ProjectParticle(particle_t* particle)
 	return;
     
     // decide which patch to use for sprite relative to player
-    sprdef = &sprites[SPR__PTL];
+    sprdef = &sprites[SPR__PTL + particle->sprite];
     sprframe = &sprdef->spriteframes[0];
 
 	// use single rotation for all views

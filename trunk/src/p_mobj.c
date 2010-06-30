@@ -570,6 +570,7 @@ particle_t* P_SpawnParticle(int tics, int color, fixed_t x, fixed_t y, fixed_t z
     particle = Z_Malloc (sizeof(*particle), PU_LEVEL, NULL);
     memset (particle, 0, sizeof (*particle));
 	
+	particle->sprite = M_Random() % 3;
     particle->x = x;
     particle->y = y;
 	particle->z = z;
