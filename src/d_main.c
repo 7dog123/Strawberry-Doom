@@ -1261,6 +1261,14 @@ void D_DoomMain (void)
     startepisode = 1;
     startmap = 1;
     autostart = false;
+    
+    //!
+    // @arg <flip>
+    //
+    // Flips all levels like a bad day in april.
+    //
+    if (M_CheckParm("-flip"))
+    	fliplevels = true;
 
     //!
     // @arg <skill>

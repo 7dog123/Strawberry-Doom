@@ -147,8 +147,11 @@ void P_LoadVertexes (int lump)
     // internal representation as fixed.
     for (i=0 ; i<numvertexes ; i++, li++, ml++)
     {
-	li->x = SHORT(ml->x)<<FRACBITS;
-	li->y = SHORT(ml->y)<<FRACBITS;
+		li->x = SHORT(ml->x)<<FRACBITS;
+		li->y = SHORT(ml->y)<<FRACBITS;
+		
+		if (fliplevels)
+			li->x = -li->x;
     }
 
     // Free buffer memory.
@@ -180,10 +183,22 @@ void P_LoadSegs (int lump)
     li = segs;
     for (i=0 ; i<numsegs ; i++, li++, ml++)
     {
+    
+    	if (fliplevels)
+    	{
+    		int tmp = ml->v1;
+    		ml->v1 = ml->v2;
+    		ml->v2 = tmp;
+    	}
+    
 	li->v1 = &vertexes[SHORT(ml->v1)];
 	li->v2 = &vertexes[SHORT(ml->v2)];
 
 	li->angle = (SHORT(ml->angle))<<16;
+	
+	if (fliplevels)
+		li->angle = -li->angle;
+	
 	li->offset = (SHORT(ml->offset))<<16;
 	linedef = SHORT(ml->linedef);
 	ldef = &lines[linedef];
@@ -307,11 +322,27 @@ void P_LoadNodes (int lump)
 	no->y = SHORT(mn->y)<<FRACBITS;
 	no->dx = SHORT(mn->dx)<<FRACBITS;
 	no->dy = SHORT(mn->dy)<<FRACBITS;
+	
+		if (fliplevels)
+		{
+			no->x += no->dx;
+			no->y += no->dy;
+			no->x = -no->x;
+			no->dy = -no->dy;
+		}
+	
 	for (j=0 ; j<2 ; j++)
 	{
 	    no->children[j] = SHORT(mn->children[j]);
 	    for (k=0 ; k<4 ; k++)
 		no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
+		
+		if (fliplevels)
+		{
+			fixed_t tmp = no->bbox[j][2];
+			no->bbox[j][2] = -no->bbox[j][3];
+			no->bbox[j][3] = -tmp;
+		}
 	}
     }
 	
@@ -360,6 +391,12 @@ void P_LoadThings (int lump)
 	}
 	if (spawn == false)
 	    break;
+	    
+	if (fliplevels)
+	{
+		mt->x = SHORT(-SHORT(mt->x));
+		mt->angle = SHORT(180-SHORT(mt->angle));
+	}
 
 	// Do spawn all other stuff. 
 	spawnthing.x = SHORT(mt->x);
@@ -397,6 +434,13 @@ void P_LoadLineDefs (int lump)
     ld = lines;
     for (i=0 ; i<numlines ; i++, mld++, ld++)
     {
+    	if (fliplevels)
+    	{
+    		short tmp = mld->v1;
+    		mld->v1 = mld->v2;
+    		mld->v2 = tmp;
+    	}
+    
 	ld->flags = SHORT(mld->flags);
 	ld->special = SHORT(mld->special);
 	ld->tag = SHORT(mld->tag);
@@ -517,6 +561,29 @@ void P_LoadBlockMap (int lump)
     bmaporgy = blockmaplump[1]<<FRACBITS;
     bmapwidth = blockmaplump[2];
     bmapheight = blockmaplump[3];
+    
+    if (fliplevels)
+    {
+    	int x, y;
+    	short* rowoffset;
+    	
+    	bmaporgx += bmapwidth * 128 * FRACUNIT;
+    	bmaporgx = -bmaporgx;
+    	
+    	for (y = 0; y < bmapheight; y++)
+    	{
+    		rowoffset = blockmap + y * bmapwidth;
+    		
+    		for (x = 0; x < bmapwidth / 2; x++)
+    		{
+    			short tmp;
+    			
+    			tmp = rowoffset[x];
+    			rowoffset[x] = rowoffset[bmapwidth-1-x];
+    			rowoffset[bmapwidth-1-x] = tmp;
+    		}
+    	}
+    }
 	
     // Clear out mobj chains
 
