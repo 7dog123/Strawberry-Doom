@@ -307,6 +307,7 @@ typedef struct particle_s
     fixed_t		deltax;
     fixed_t		deltay;
     fixed_t		deltaz;
+    int color;
     int tics;
     
     // Based off mobj_T

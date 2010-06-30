@@ -112,6 +112,7 @@ R_InstallSpriteLump
   boolean	flipped )
 {
     int		r;
+    patch_t* patch;
 	
     if (frame >= 29 || rotation > 8)
 	I_Error("R_InstallSpriteLump: "
@@ -134,8 +135,14 @@ R_InstallSpriteLump
 	sprtemp[frame].rotate = false;
 	for (r=0 ; r<8 ; r++)
 	{
-	    sprtemp[frame].lump[r] = lump - firstspritelump;
+	    sprtemp[frame].lump[r] = lump;
 	    sprtemp[frame].flip[r] = (byte)flipped;
+	    
+	    // GhostlyDeath <June 29, 2010> -- spritewidth, spriteoffset, spritetopoffset
+		patch = W_CacheLumpNum (sprtemp[frame].lump[r], PU_CACHE);
+		sprtemp[frame].spritewidth[r] = SHORT(patch->width)<<FRACBITS;
+		sprtemp[frame].spriteoffset[r] = SHORT(patch->leftoffset)<<FRACBITS;
+		sprtemp[frame].spritetopoffset[r] = SHORT(patch->topoffset)<<FRACBITS;
 	}
 	return;
     }
@@ -154,8 +161,14 @@ R_InstallSpriteLump
 		 "has two lumps mapped to it",
 		 spritename, 'A'+frame, '1'+rotation);
 		
-    sprtemp[frame].lump[rotation] = lump - firstspritelump;
+    sprtemp[frame].lump[rotation] = lump;
     sprtemp[frame].flip[rotation] = (byte)flipped;
+    
+    // GhostlyDeath <June 29, 2010> -- spritewidth, spriteoffset, spritetopoffset
+	patch = W_CacheLumpNum (sprtemp[frame].lump[rotation], PU_CACHE);
+	sprtemp[frame].spritewidth[rotation] = SHORT(patch->width)<<FRACBITS;
+	sprtemp[frame].spriteoffset[rotation] = SHORT(patch->leftoffset)<<FRACBITS;
+	sprtemp[frame].spritetopoffset[rotation] = SHORT(patch->topoffset)<<FRACBITS;
 }
 
 
@@ -209,8 +222,8 @@ void R_InitSpriteDefs (char** namelist)
 		}
 		else
 		{
-			start = W_CheckNumForName("BRY_STRT")-1;
-			end = W_CheckNumForName("BRY_END")+1;
+			start = W_CheckNumForName("BRY_STRT");
+			end = W_CheckNumForName("BRY_END");
 		}
 	
 		// scan all the lump names for each of the names,
@@ -419,7 +432,7 @@ R_DrawVisSprite
     patch_t*		patch;
 	
 	
-    patch = W_CacheLumpNum (vis->patch+firstspritelump, PU_CACHE);
+    patch = W_CacheLumpNum (vis->patch, PU_CACHE);
 
     dc_colormap = vis->colormap;
     
@@ -446,7 +459,7 @@ R_DrawVisSprite
 	texturecolumn = frac>>FRACBITS;
 #ifdef RANGECHECK
 	if (texturecolumn < 0 || texturecolumn >= SHORT(patch->width))
-	    I_Error ("R_DrawSpriteRange: bad texturecolumn");
+	    continue;//I_Error ("R_DrawSpriteRange: bad texturecolumn");
 #endif
 	column = (column_t *) ((byte *)patch +
 			       LONG(patch->columnofs[texturecolumn]));
@@ -512,22 +525,23 @@ void R_ProjectParticle(particle_t* particle)
 	return;
     
     // decide which patch to use for sprite relative to player
-    sprdef = &sprites[SPR_CAND];
+    sprdef = &sprites[SPR__PTL];
     sprframe = &sprdef->spriteframes[0];
 
 	// use single rotation for all views
+	
 	lump = sprframe->lump[0];
 	flip = (boolean)sprframe->flip[0];
     
     // calculate edges of the shape
-    tx -= spriteoffset[lump];	
+    tx -= sprframe->spriteoffset[0];
     x1 = (centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS;
 
     // off the right side?
     if (x1 > viewwidth)
 		return;
     
-    tx +=  spritewidth[lump];
+    tx +=  sprframe->spritewidth[0];
     x2 = ((centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS) - 1;
 
     // off the left side
@@ -541,7 +555,7 @@ void R_ProjectParticle(particle_t* particle)
     vis->gx = particle->x;
     vis->gy = particle->y;
     vis->gz = particle->z;
-    vis->gzt = particle->z + spritetopoffset[lump];
+    vis->gzt = particle->z + sprframe->spritetopoffset[0];
     vis->texturemid = vis->gzt - viewz;
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
@@ -555,13 +569,20 @@ void R_ProjectParticle(particle_t* particle)
     vis->patch = lump;
     
     // get light level
-	// diminished light
-	index = xscale>>(LIGHTSCALESHIFT-detailshift);
+    if (particle->color & 0x100)
+    {
+    	vis->colormap = colormaps;
+    }
+    else
+    {
+		// diminished light
+		index = xscale>>(LIGHTSCALESHIFT-detailshift);
 
-	if (index >= MAXLIGHTSCALE) 
-	    index = MAXLIGHTSCALE-1;
+		if (index >= MAXLIGHTSCALE) 
+			index = MAXLIGHTSCALE-1;
 
-	vis->colormap = spritelights[index];
+		vis->colormap = spritelights[index];
+	}
 }
 
 //
@@ -589,7 +610,7 @@ void R_ProjectSprite (mobj_t* thing)
     spriteframe_t*	sprframe;
     int			lump;
     
-    unsigned		rot;
+    unsigned		rot = 0;
     boolean		flip;
     
     int			index;
@@ -652,14 +673,14 @@ void R_ProjectSprite (mobj_t* thing)
     }
     
     // calculate edges of the shape
-    tx -= spriteoffset[lump];	
+    tx -= sprframe->spriteoffset[rot];	
     x1 = (centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS;
 
     // off the right side?
     if (x1 > viewwidth)
 	return;
     
-    tx +=  spritewidth[lump];
+    tx +=  sprframe->spritewidth[rot];
     x2 = ((centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS) - 1;
 
     // off the left side
@@ -673,7 +694,7 @@ void R_ProjectSprite (mobj_t* thing)
     vis->gx = thing->x;
     vis->gy = thing->y;
     vis->gz = thing->z;
-    vis->gzt = thing->z + spritetopoffset[lump];
+    vis->gzt = thing->z + sprframe->spritetopoffset[rot];
     vis->texturemid = vis->gzt - viewz;
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
@@ -681,7 +702,7 @@ void R_ProjectSprite (mobj_t* thing)
 
     if (flip)
     {
-	vis->startfrac = spritewidth[lump]-1;
+	vis->startfrac = sprframe->spritewidth[rot]-1;
 	vis->xiscale = -iscale;
     }
     else
@@ -798,14 +819,14 @@ void R_DrawPSprite (pspdef_t* psp)
     // calculate edges of the shape
     tx = psp->sx-160*FRACUNIT;
 	
-    tx -= spriteoffset[lump];	
+    tx -= sprframe->spriteoffset[0];	
     x1 = (centerxfrac + FixedMul (tx,pspritescale) ) >>FRACBITS;
 
     // off the right side
     if (x1 > viewwidth)
 	return;		
 
-    tx +=  spritewidth[lump];
+    tx +=  sprframe->spritewidth[0];
     x2 = ((centerxfrac + FixedMul (tx, pspritescale) ) >>FRACBITS) - 1;
 
     // off the left side
@@ -815,7 +836,7 @@ void R_DrawPSprite (pspdef_t* psp)
     // store information in a vissprite
     vis = &avis;
     vis->mobjflags = 0;
-    vis->texturemid = (BASEYCENTER<<FRACBITS)+FRACUNIT/2-(psp->sy-spritetopoffset[lump]);
+    vis->texturemid = (BASEYCENTER<<FRACBITS)+FRACUNIT/2-(psp->sy-sprframe->spritetopoffset[0]);
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
     vis->scale = pspritescale<<detailshift;
@@ -823,7 +844,7 @@ void R_DrawPSprite (pspdef_t* psp)
     if (flip)
     {
 	vis->xiscale = -pspriteiscale;
-	vis->startfrac = spritewidth[lump]-1;
+	vis->startfrac = sprframe->spritewidth[0]-1;
     }
     else
     {
