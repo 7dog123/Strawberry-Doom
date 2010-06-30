@@ -1,14 +1,21 @@
-2010-06-29 00:59:45 
+2010-06-30 00:50:07 GhostlyDeath
+
+	Strawberry Doom:
+		Add particles!
+		Add -flip, so levels are flipped on load - the game is more boring this way.
+			(pun on r1109 "Flip all levels on load - the game is more fun this way.")
+
+2010-06-29 00:59:45 GhostlyDeath
 	
 	Strawberry Doom:
 		Doom2+ Limits.
 
-2010-06-29 00:45:40 
+2010-06-29 00:45:40 GhostlyDeath
 
 	Strawberry Doom:
 		Return where V_DrawPatch would error out, so us experts can use our sensitivities of 100+ with no accidental option menu hits.
 
-2010-06-29 00:36:39 
+2010-06-29 00:36:39 GhostlyDeath
 
 	Strawberry Doom:
 		Use network names instead of GREEN, INDIGO, etc. and Player #, disables dehacked replacement for these however.
