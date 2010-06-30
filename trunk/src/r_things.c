@@ -435,6 +435,7 @@ R_DrawVisSprite
     patch = W_CacheLumpNum (vis->patch, PU_CACHE);
 
     dc_colormap = vis->colormap;
+   	dc_purecolor = vis->purecolor;
     
     if (!dc_colormap)
     {
@@ -491,14 +492,12 @@ void R_ProjectParticle(particle_t* particle)
     spriteframe_t*	sprframe;
     int			lump;
     
-    unsigned		rot;
     boolean		flip;
     
     int			index;
 
     vissprite_t*	vis;
     
-    angle_t		ang;
     fixed_t		iscale;
     
     // transform the origin point
@@ -583,6 +582,8 @@ void R_ProjectParticle(particle_t* particle)
 
 		vis->colormap = spritelights[index];
 	}
+	
+	vis->purecolor = particle->color & 0xFF;
 }
 
 //
@@ -699,6 +700,7 @@ void R_ProjectSprite (mobj_t* thing)
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
     iscale = FixedDiv (FRACUNIT, xscale);
+    vis->purecolor = 0;
 
     if (flip)
     {
@@ -840,6 +842,7 @@ void R_DrawPSprite (pspdef_t* psp)
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
     vis->scale = pspritescale<<detailshift;
+    vis->purecolor = 0;
     
     if (flip)
     {

@@ -465,8 +465,20 @@ void P_ParticleThinker(particle_t* particle)
 		// Bounce off floor/ceiling
 		if (particle->color & 0x200)
 		{
-			if ((particle->z < particle->subsector->sector->floorheight) || (particle->z > particle->subsector->sector->ceilingheight))
-				particle->momz = -particle->momz;
+			if (particle->z < particle->subsector->sector->floorheight)
+				if (particle->color & 0x800)
+					particle->momz = particle->deltaz = 0;
+				else
+					particle->momz = -particle->momz;
+			
+			if (particle->z > particle->subsector->sector->ceilingheight)
+				if (particle->color & 0x800)
+				{
+					particle->momz = -1 << FRACBITS;
+					particle->deltaz = 0;
+				}
+				else
+					particle->momz = -particle->momz;
 		}
 		
 		// Delta move
@@ -476,6 +488,10 @@ void P_ParticleThinker(particle_t* particle)
 		particle->deltay >>= 1;
 		particle->momz += particle->deltaz >> 1;
 		particle->deltaz >>= 1;
+		
+		// Gravity?
+		if (particle->color & 0x800)
+			particle->deltaz = -GRAVITY;
 	}
 }
 

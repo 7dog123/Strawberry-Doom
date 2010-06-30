@@ -158,6 +158,7 @@ R_RenderMaskedSegRange
 			
     if (fixedcolormap)
 	dc_colormap = fixedcolormap;
+	dc_purecolor = 0;
     
     // draw the columns
     for (dc_x = x1 ; dc_x <= x2 ; dc_x++)
@@ -214,6 +215,9 @@ void R_RenderSegLoop (void)
     fixed_t		texturecolumn;
     int			top;
     int			bottom;
+    
+    
+	dc_purecolor = 0;
 
     for ( ; rw_x < rw_stopx ; rw_x++)
     {

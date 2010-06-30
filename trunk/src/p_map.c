@@ -968,6 +968,7 @@ boolean PTR_ShootTraverse (intercept_t* in)
     fixed_t		dist;
     fixed_t		thingtopslope;
     fixed_t		thingbottomslope;
+    angle_t		BlastAngle, BlastAngleZ;
 		
     if (in->isaline)
     {
@@ -1034,7 +1035,7 @@ boolean PTR_ShootTraverse (intercept_t* in)
 	// GhostlyDeath <June 29, 2010> -- Particle
 	j = (M_Random() % 3) + 1;
 	for (i = 0; i < j; i++)
-		P_SpawnParticle((M_Random() % 9) + 1, 0 | 0x300,
+		P_SpawnParticle((M_Random() % 9) + 1, (224 + (M_Random() % 7)) | 0x300,
 			x, y, z,
 			((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1),
 			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
@@ -1076,17 +1077,45 @@ boolean PTR_ShootTraverse (intercept_t* in)
     // Spawn bullet puffs or blod spots,
     // depending on target type.
     if (in->d.thing->flags & MF_NOBLOOD)
-	P_SpawnPuff (x,y,z);
+    {
+		P_SpawnPuff (x,y,z);
+		
+		// GhostlyDeath <June 29, 2010> -- Particle
+		j = (M_Random() % 3) + 1;
+		for (i = 0; i < j; i++)
+			P_SpawnParticle((M_Random() % 9) + 1, (224 + (M_Random() % 7)) | 0x300,
+				x, y, z,
+				((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1),
+				((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
+				);
+	}
     else
     {
 		P_SpawnBlood (x,y,z, la_damage);
 		
 		// GhostlyDeath <June 29, 2010> -- Particle
-		/*P_SpawnParticle(35, 0,
+		BlastAngle = R_PointToAngle2(
+				shootthing->x,
+				shootthing->y,
+				th->x,
+				th->y
+			);
+		BlastAngleZ = R_PointToAngle2(
+				shootthing->y,
+				(shootthing->z + th->height) >> 1,
+				th->y,
+				(th->z + th->height) >> 1
+			);
+		
+		P_SpawnParticle((M_Random() % 7) + 12, (176 + (M_Random() % 15)) | 0x800 | 0x200,
 			x, y, z,
-			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS,
-			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
-			);*/
+			FixedMul(finecosine[BlastAngle >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+				FixedMul(finesine[BlastAngle >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+				FixedMul(finesine[BlastAngleZ >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+			finecosine[BlastAngle >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
+				finesine[BlastAngle >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
+				finesine[BlastAngleZ >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS)
+			);
 	}
 
     if (la_damage)

@@ -88,6 +88,7 @@ lighttable_t*		dc_colormap;
 int			dc_x; 
 int			dc_yl; 
 int			dc_yh; 
+unsigned char dc_purecolor;
 fixed_t			dc_iscale; 
 fixed_t			dc_texturemid;
 
@@ -137,16 +138,28 @@ void R_DrawColumn (void)
     // Inner loop that does the actual texture mapping,
     //  e.g. a DDA-lile scaling.
     // This is as fast as it gets.
-    do 
-    {
-	// Re-map color indices from wall texture column
-	//  using a lighting/special effects LUT.
-	*dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
+    if (dc_purecolor)
+		do 
+		{
+		// Re-map color indices from wall texture column
+		//  using a lighting/special effects LUT.
+		*dest = dc_colormap[dc_purecolor];
 	
-	dest += SCREENWIDTH; 
-	frac += fracstep;
+		dest += SCREENWIDTH; 
+		frac += fracstep;
 	
-    } while (count--); 
+		} while (count--);
+    else
+		do 
+		{
+		// Re-map color indices from wall texture column
+		//  using a lighting/special effects LUT.
+		*dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
+	
+		dest += SCREENWIDTH; 
+		frac += fracstep;
+	
+		} while (count--);
 } 
 
 
