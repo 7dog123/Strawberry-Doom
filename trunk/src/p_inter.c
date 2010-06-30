@@ -673,8 +673,10 @@ P_KillMobj
 ( mobj_t*	source,
   mobj_t*	target )
 {
+	int i, j;
     mobjtype_t	item;
     mobj_t*	mo;
+    fixed_t zz;
 	
     target->flags &= ~(MF_SHOOTABLE|MF_FLOAT|MF_SKULLFLY);
 
@@ -723,7 +725,21 @@ P_KillMobj
     if (target->health < -target->info->spawnhealth 
 	&& target->info->xdeathstate)
     {
-	P_SetMobjState (target, target->info->xdeathstate);
+		P_SetMobjState (target, target->info->xdeathstate);
+		
+		j = (M_Random() % 50) + 50;
+		for (i = 0; i < j; i++)
+		{
+			// At random height in Z
+			zz = target->z + (target->height % ((M_Random() + 1) << FRACBITS));
+			
+			// Spawn it
+			P_SpawnParticle((M_Random() % 15) + 35, (176 + (M_Random() % 15)) | 0x800 | 0x200,
+				target->x, target->y, zz,
+				((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1),
+				((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
+				);
+		}
     }
     else
 	P_SetMobjState (target, target->info->deathstate);
