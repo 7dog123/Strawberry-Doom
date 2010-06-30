@@ -174,6 +174,8 @@ typedef enum
     SPR_TLP2,
     
     SPR__PTL,
+    SPR__PTM,
+    SPR__PTN,
     
     NUMSPRITES
 

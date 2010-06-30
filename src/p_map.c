@@ -1094,28 +1094,32 @@ boolean PTR_ShootTraverse (intercept_t* in)
 		P_SpawnBlood (x,y,z, la_damage);
 		
 		// GhostlyDeath <June 29, 2010> -- Particle
-		BlastAngle = R_PointToAngle2(
-				shootthing->x,
-				shootthing->y,
-				th->x,
-				th->y
-			);
-		BlastAngleZ = R_PointToAngle2(
-				shootthing->y,
-				(shootthing->z + th->height) >> 1,
-				th->y,
-				(th->z + th->height) >> 1
-			);
+		j = (M_Random() % 3) + 1;
+		for (i = 0; i < j; i++)
+		{
+			BlastAngle = R_PointToAngle2(
+					shootthing->x,
+					shootthing->y,
+					th->x,
+					th->y
+				);
+			BlastAngleZ = R_PointToAngle2(
+					shootthing->y,
+					(shootthing->z + th->height) >> 1,
+					th->y,
+					(th->z + th->height) >> 1
+				);
 		
-		P_SpawnParticle((M_Random() % 7) + 12, (176 + (M_Random() % 15)) | 0x800 | 0x200,
-			x, y, z,
-			FixedMul(finecosine[BlastAngle >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
-				FixedMul(finesine[BlastAngle >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
-				FixedMul(finesine[BlastAngleZ >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
-			finecosine[BlastAngle >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
-				finesine[BlastAngle >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
-				finesine[BlastAngleZ >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS)
-			);
+			P_SpawnParticle((M_Random() % 7) + 12, (176 + (M_Random() % 15)) | 0x800 | 0x200,
+				x, y, z,
+				FixedMul(finecosine[BlastAngle >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+					FixedMul(finesine[BlastAngle >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+					FixedMul(finesine[BlastAngleZ >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+				finecosine[BlastAngle >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
+					finesine[BlastAngle >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
+					finesine[BlastAngleZ >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS)
+				);
+		}
 	}
 
     if (la_damage)

@@ -804,6 +804,8 @@ P_DamageMobj
   mobj_t*	source,
   int 		damage )
 {
+	int i, j;
+	angle_t BlastAngleZ;
     unsigned	ang;
     int		saved;
     player_t*	player;
@@ -841,6 +843,31 @@ P_DamageMobj
 				target->y);
 		
 	thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
+	
+	if (!(target->flags & MF_NOBLOOD))
+	{
+		j = (M_Random() % 3) + ((damage / ((M_Random() % 2) + 2)));
+		for (i = 0; i < j; i++)
+		{
+			// GhostlyDeath <June 29, 2010> -- Particle
+			BlastAngleZ = R_PointToAngle2(
+					inflictor->y,
+					(inflictor->z + inflictor->height) >> 1,
+					target->y,
+					(target->z + target->height) >> 1
+				);
+	
+			P_SpawnParticle((M_Random() % 7) + 12, (176 + (M_Random() % 15)) | 0x800 | 0x200,
+				target->x, target->y, (target->z + target->height) >> 1,
+				FixedMul(finecosine[ang >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+					FixedMul(finesine[ang >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+					FixedMul(finesine[BlastAngleZ >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
+				finecosine[ang >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
+					finesine[ang >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
+					finesine[BlastAngleZ >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS)
+				);
+		}
+	}
 
 	// make fall forwards sometimes
 	if ( damage < 40
