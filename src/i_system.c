@@ -364,8 +364,9 @@ void I_Error (char *error, ...)
     }
 #endif
 
-    // abort();
-
-    exit(-1);
+	if (devparm)
+    	abort();
+	else
+	    exit(-1);
 }
 

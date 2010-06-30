@@ -954,6 +954,7 @@ PTR_AimTraverse (intercept_t* in)
 //
 boolean PTR_ShootTraverse (intercept_t* in)
 {
+	int i, j;
     fixed_t		x;
     fixed_t		y;
     fixed_t		z;
@@ -1030,6 +1031,15 @@ boolean PTR_ShootTraverse (intercept_t* in)
 	// Spawn bullet puffs.
 	P_SpawnPuff (x,y,z);
 	
+	// GhostlyDeath <June 29, 2010> -- Particle
+	j = (M_Random() % 3) + 1;
+	for (i = 0; i < j; i++)
+		P_SpawnParticle((M_Random() % 9) + 1, 0,
+			x, y, z,
+			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS,
+			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
+			);
+	
 	// don't go any farther
 	return false;	
     }
@@ -1068,7 +1078,16 @@ boolean PTR_ShootTraverse (intercept_t* in)
     if (in->d.thing->flags & MF_NOBLOOD)
 	P_SpawnPuff (x,y,z);
     else
-	P_SpawnBlood (x,y,z, la_damage);
+    {
+		P_SpawnBlood (x,y,z, la_damage);
+		
+		// GhostlyDeath <June 29, 2010> -- Particle
+		/*P_SpawnParticle(35, 0,
+			x, y, z,
+			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS,
+			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
+			);*/
+	}
 
     if (la_damage)
 	P_DamageMobj (th, shootthing, shootthing, la_damage);

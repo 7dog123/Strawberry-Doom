@@ -1,7 +1,7 @@
 
 gamesdir = $(prefix)/games
 
-games_PROGRAMS = strawberry-doom strawberry-server
+games_PROGRAMS = strawberry-doom strawberry-server strawberry-dwango
 
 AM_CFLAGS = -I../opl -I../textscreen -I../pcsound @SDLMIXER_CFLAGS@ @SDLNET_CFLAGS@
 
@@ -22,6 +22,24 @@ z_native.c           z_zone.h
 
 strawberry_server_SOURCES=$(DEDSERV_FILES)
 strawberry_server_LDADD = ../wince/libc_wince.a @LDFLAGS@ @SDLNET_LIBS@ 
+
+DWANGO_FILES=\
+d_dedicated.c                              \
+i_main.c                                   \
+i_timer.c            i_timer.h             \
+m_argv.c             m_argv.h              \
+m_misc.c             m_misc.h              \
+net_common.c         net_common.h          \
+net_dedicated.c      net_dedicated.h       \
+net_io.c             net_io.h              \
+net_packet.c         net_packet.h          \
+net_sdl.c            net_sdl.h             \
+net_dwango.c         net_server.h          \
+net_structrw.c       net_structrw.h        \
+z_native.c           z_zone.h
+
+strawberry_dwango_SOURCES=$(DWANGO_FILES)
+strawberry_dwango_LDADD = ../wince/libc_wince.a @LDFLAGS@ @SDLNET_LIBS@ 
 
 MAIN_SOURCE_FILES=\
 am_map.c             am_map.h              \

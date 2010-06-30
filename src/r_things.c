@@ -186,6 +186,7 @@ void R_InitSpriteDefs (char** namelist)
     int		start;
     int		end;
     int		patched;
+    int z;
 		
     // count the number of sprite names
     check = namelist;
@@ -199,85 +200,98 @@ void R_InitSpriteDefs (char** namelist)
 		
     sprites = Z_Malloc(numsprites *sizeof(*sprites), PU_STATIC, NULL);
 	
-    start = firstspritelump-1;
-    end = lastspritelump+1;
-	
-    // scan all the lump names for each of the names,
-    //  noting the highest frame letter.
-    // Just compare 4 characters as ints
-    for (i=0 ; i<numsprites ; i++)
-    {
-	spritename = DEH_String(namelist[i]);
-	memset (sprtemp,-1, sizeof(sprtemp));
-		
-	maxframe = -1;
-	
-	// scan the lumps,
-	//  filling in the frames for whatever is found
-	for (l=start+1 ; l<end ; l++)
+	for (z = 0; z < 2; z++)
 	{
-	    if (!strncasecmp(lumpinfo[l].name, spritename, 4))
-	    {
-		frame = lumpinfo[l].name[4] - 'A';
-		rotation = lumpinfo[l].name[5] - '0';
-
-		if (modifiedgame)
-		    patched = W_GetNumForName (lumpinfo[l].name);
-		else
-		    patched = l;
-
-		R_InstallSpriteLump (patched, frame, rotation, false);
-
-		if (lumpinfo[l].name[6])
+		if (!z)
 		{
-		    frame = lumpinfo[l].name[6] - 'A';
-		    rotation = lumpinfo[l].name[7] - '0';
-		    R_InstallSpriteLump (l, frame, rotation, true);
+			start = firstspritelump-1;
+			end = lastspritelump+1;
 		}
-	    }
-	}
+		else
+		{
+			start = W_CheckNumForName("BRY_STRT")-1;
+			end = W_CheckNumForName("BRY_END")+1;
+		}
 	
-	// check the frames that were found for completeness
-	if (maxframe == -1)
-	{
-	    sprites[i].numframes = 0;
-	    continue;
-	}
+		// scan all the lump names for each of the names,
+		//  noting the highest frame letter.
+		// Just compare 4 characters as ints
+		for (i=0 ; i<numsprites ; i++)
+		{
+			if ((!z && i >= SPR__PTL) || (z && i < SPR__PTL))
+				continue;
+					
+			spritename = DEH_String(namelist[i]);
+			memset (sprtemp,-1, sizeof(sprtemp));
 		
-	maxframe++;
+			maxframe = -1;
 	
-	for (frame = 0 ; frame < maxframe ; frame++)
-	{
-	    switch ((int)sprtemp[frame].rotate)
-	    {
-	      case -1:
-		// no rotations were found for that frame at all
-		I_Error ("R_InitSprites: No patches found "
-			 "for %s frame %c", spritename, frame+'A');
-		break;
-		
-	      case 0:
-		// only the first rotation is needed
-		break;
-			
-	      case 1:
-		// must have all 8 frames
-		for (rotation=0 ; rotation<8 ; rotation++)
-		    if (sprtemp[frame].lump[rotation] == -1)
-			I_Error ("R_InitSprites: Sprite %s frame %c "
-				 "is missing rotations",
-				 spritename, frame+'A');
-		break;
-	    }
-	}
-	
-	// allocate space for the frames present and copy sprtemp to it
-	sprites[i].numframes = maxframe;
-	sprites[i].spriteframes = 
-	    Z_Malloc (maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
-	memcpy (sprites[i].spriteframes, sprtemp, maxframe*sizeof(spriteframe_t));
-    }
+			// scan the lumps,
+			//  filling in the frames for whatever is found
+			for (l=start+1 ; l<end ; l++)
+			{
+				if (!strncasecmp(lumpinfo[l].name, spritename, 4))
+				{
+					frame = lumpinfo[l].name[4] - 'A';
+					rotation = lumpinfo[l].name[5] - '0';
 
+					if (modifiedgame)
+						patched = W_GetNumForName (lumpinfo[l].name);
+					else
+						patched = l;
+
+					R_InstallSpriteLump (patched, frame, rotation, false);
+
+					if (lumpinfo[l].name[6])
+					{
+						frame = lumpinfo[l].name[6] - 'A';
+						rotation = lumpinfo[l].name[7] - '0';
+						R_InstallSpriteLump (l, frame, rotation, true);
+					}
+				}
+			}
+	
+			// check the frames that were found for completeness
+			if (maxframe == -1)
+			{
+				sprites[i].numframes = 0;
+				continue;
+			}
+		
+			maxframe++;
+	
+			for (frame = 0 ; frame < maxframe ; frame++)
+			{
+				switch ((int)sprtemp[frame].rotate)
+				{
+					case -1:
+						// no rotations were found for that frame at all
+						I_Error ("R_InitSprites: No patches found "
+						"for %s frame %c", spritename, frame+'A');
+						break;
+
+					case 0:
+						// only the first rotation is needed
+						break;
+
+					case 1:
+						// must have all 8 frames
+						for (rotation=0 ; rotation<8 ; rotation++)
+						if (sprtemp[frame].lump[rotation] == -1)
+						I_Error ("R_InitSprites: Sprite %s frame %c "
+							"is missing rotations",
+							spritename, frame+'A');
+					break;
+				}
+			}
+	
+			// allocate space for the frames present and copy sprtemp to it
+			sprites[i].numframes = maxframe;
+			sprites[i].spriteframes = 
+				Z_Malloc (maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
+			memcpy (sprites[i].spriteframes, sprtemp, maxframe*sizeof(spriteframe_t));
+		}
+	}
 }
 
 
@@ -442,7 +456,113 @@ R_DrawVisSprite
     colfunc = basecolfunc;
 }
 
+/* R_ProjectParticle() -- Project particle on screen */
+void R_ProjectParticle(particle_t* particle)
+{
 
+    fixed_t		tr_x;
+    fixed_t		tr_y;
+    
+    fixed_t		gxt;
+    fixed_t		gyt;
+    
+    fixed_t		tx;
+    fixed_t		tz;
+
+    fixed_t		xscale;
+    
+    int			x1;
+    int			x2;
+
+    spritedef_t*	sprdef;
+    spriteframe_t*	sprframe;
+    int			lump;
+    
+    unsigned		rot;
+    boolean		flip;
+    
+    int			index;
+
+    vissprite_t*	vis;
+    
+    angle_t		ang;
+    fixed_t		iscale;
+    
+    // transform the origin point
+    tr_x = particle->x - viewx;
+    tr_y = particle->y - viewy;
+	
+    gxt = FixedMul(tr_x,viewcos); 
+    gyt = -FixedMul(tr_y,viewsin);
+    
+    tz = gxt-gyt; 
+
+    // thing is behind view plane?
+    if (tz < MINZ)
+	return;
+    
+    xscale = FixedDiv(projection, tz);
+	
+    gxt = -FixedMul(tr_x,viewsin); 
+    gyt = FixedMul(tr_y,viewcos); 
+    tx = -(gyt+gxt); 
+
+    // too far off the side?
+    if (abs(tx)>(tz<<2))
+	return;
+    
+    // decide which patch to use for sprite relative to player
+    sprdef = &sprites[SPR_CAND];
+    sprframe = &sprdef->spriteframes[0];
+
+	// use single rotation for all views
+	lump = sprframe->lump[0];
+	flip = (boolean)sprframe->flip[0];
+    
+    // calculate edges of the shape
+    tx -= spriteoffset[lump];	
+    x1 = (centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS;
+
+    // off the right side?
+    if (x1 > viewwidth)
+		return;
+    
+    tx +=  spritewidth[lump];
+    x2 = ((centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS) - 1;
+
+    // off the left side
+    if (x2 < 0)
+		return;
+    
+    // store information in a vissprite
+    vis = R_NewVisSprite ();
+    vis->mobjflags = particle->flags;
+    vis->scale = xscale<<detailshift;
+    vis->gx = particle->x;
+    vis->gy = particle->y;
+    vis->gz = particle->z;
+    vis->gzt = particle->z + spritetopoffset[lump];
+    vis->texturemid = vis->gzt - viewz;
+    vis->x1 = x1 < 0 ? 0 : x1;
+    vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
+    iscale = FixedDiv (FRACUNIT, xscale);
+	
+	vis->startfrac = 0;
+	vis->xiscale = iscale;
+
+    if (vis->x1 > x1)
+		vis->startfrac += vis->xiscale*(vis->x1-x1);
+    vis->patch = lump;
+    
+    // get light level
+	// diminished light
+	index = xscale>>(LIGHTSCALESHIFT-detailshift);
+
+	if (index >= MAXLIGHTSCALE) 
+	    index = MAXLIGHTSCALE-1;
+
+	vis->colormap = spritelights[index];
+}
 
 //
 // R_ProjectSprite
@@ -612,6 +732,7 @@ void R_ProjectSprite (mobj_t* thing)
 //
 void R_AddSprites (sector_t* sec)
 {
+	particle_t* particle;
     mobj_t*		thing;
     int			lightnum;
 
@@ -636,7 +757,9 @@ void R_AddSprites (sector_t* sec)
 
     // Handle all things in sector.
     for (thing = sec->thinglist ; thing ; thing = thing->snext)
-	R_ProjectSprite (thing);
+		R_ProjectSprite (thing);
+	for (particle = sec->particlelist; particle; particle = particle->snext)
+		R_ProjectParticle(particle);
 }
 
 
