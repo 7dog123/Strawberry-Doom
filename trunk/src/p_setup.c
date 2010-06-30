@@ -183,16 +183,15 @@ void P_LoadSegs (int lump)
     li = segs;
     for (i=0 ; i<numsegs ; i++, li++, ml++)
     {
-    
-    	if (fliplevels)
-    	{
-    		int tmp = ml->v1;
-    		ml->v1 = ml->v2;
-    		ml->v2 = tmp;
-    	}
-    
 	li->v1 = &vertexes[SHORT(ml->v1)];
 	li->v2 = &vertexes[SHORT(ml->v2)];
+	
+	if (fliplevels)
+	{
+		vertex_t* tmp = li->v1;
+		li->v1 = li->v2;
+		li->v2 = tmp;
+	}
 
 	li->angle = (SHORT(ml->angle))<<16;
 	
@@ -391,19 +390,19 @@ void P_LoadThings (int lump)
 	}
 	if (spawn == false)
 	    break;
-	    
-	if (fliplevels)
-	{
-		mt->x = SHORT(-SHORT(mt->x));
-		mt->angle = SHORT(180-SHORT(mt->angle));
-	}
-
+	
 	// Do spawn all other stuff. 
 	spawnthing.x = SHORT(mt->x);
 	spawnthing.y = SHORT(mt->y);
 	spawnthing.angle = SHORT(mt->angle);
 	spawnthing.type = SHORT(mt->type);
 	spawnthing.options = SHORT(mt->options);
+	
+	if (fliplevels)
+	{
+		spawnthing.x = -spawnthing.x;
+		spawnthing.angle = 180 - spawnthing.angle;
+	}
 	
 	P_SpawnMapThing(&spawnthing);
     }
@@ -434,18 +433,21 @@ void P_LoadLineDefs (int lump)
     ld = lines;
     for (i=0 ; i<numlines ; i++, mld++, ld++)
     {
-    	if (fliplevels)
-    	{
-    		short tmp = mld->v1;
-    		mld->v1 = mld->v2;
-    		mld->v2 = tmp;
-    	}
-    
 	ld->flags = SHORT(mld->flags);
 	ld->special = SHORT(mld->special);
 	ld->tag = SHORT(mld->tag);
-	v1 = ld->v1 = &vertexes[SHORT(mld->v1)];
-	v2 = ld->v2 = &vertexes[SHORT(mld->v2)];
+	
+	if (fliplevels)
+	{
+		v1 = ld->v2 = &vertexes[SHORT(mld->v2)];
+		v2 = ld->v1 = &vertexes[SHORT(mld->v1)];
+	}
+	else
+	{
+		v1 = ld->v1 = &vertexes[SHORT(mld->v1)];
+		v2 = ld->v2 = &vertexes[SHORT(mld->v2)];
+	}
+	
 	ld->dx = v2->x - v1->x;
 	ld->dy = v2->y - v1->y;
 	
