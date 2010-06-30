@@ -462,7 +462,12 @@ void P_ParticleThinker(particle_t* particle)
 		particle->z += particle->momz;
 		P_SetParticlePosition(particle);
 		
-		// Below floor?
+		// Bounce off floor/ceiling
+		if (particle->color & 0x200)
+		{
+			if ((particle->z < particle->subsector->sector->floorheight) || (particle->z > particle->subsector->sector->ceilingheight))
+				particle->momz = -particle->momz;
+		}
 		
 		// Delta move
 		particle->momx += particle->deltax >> 1;
@@ -559,6 +564,7 @@ particle_t* P_SpawnParticle(int tics, int color, fixed_t x, fixed_t y, fixed_t z
     particle->deltay = deltay;
 	particle->deltaz = deltaz;
 	particle->tics = tics;
+	particle->color = color;
     
     // set subsector and/or block links
     P_SetParticlePosition (particle);

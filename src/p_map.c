@@ -1034,9 +1034,9 @@ boolean PTR_ShootTraverse (intercept_t* in)
 	// GhostlyDeath <June 29, 2010> -- Particle
 	j = (M_Random() % 3) + 1;
 	for (i = 0; i < j; i++)
-		P_SpawnParticle((M_Random() % 9) + 1, 0,
+		P_SpawnParticle((M_Random() % 9) + 1, 0 | 0x300,
 			x, y, z,
-			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS,
+			((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1),
 			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
 			);
 	

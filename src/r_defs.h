@@ -440,6 +440,11 @@ typedef struct
     // Flip bit (1 = flip) to use for view angles 0-7.
     byte	flip[8];
     
+    // GhostlyDeath <June 29, 2010> -- Sprite info
+	fixed_t spritewidth[8];	
+	fixed_t spriteoffset[8];
+	fixed_t spritetopoffset[8];
+    
 } spriteframe_t;
 
 
