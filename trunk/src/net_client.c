@@ -2,6 +2,7 @@
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 2005 Simon Howard
+// Copyright(C) 2010 GhostlyDeath (ghostlydeath@remood.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -1101,14 +1102,30 @@ void NET_CL_Run(void)
     }
 }
 
+/* NET_CL_SendSDSYN() -- Send Strawberry Doom Server sync */
+static void NET_CL_SendSDSYN(void)
+{
+	net_packet_t *packet;
+
+	packet = NET_NewPacket(2);
+	NET_WriteInt16(packet, NET_PACKET_TYPE_SD_SYN);
+	
+	NET_Conn_SendPacket(&client_connection, packet);
+	NET_FreePacket(packet);
+}
+
 static void NET_CL_SendSYN(void)
 {
     net_packet_t *packet;
+    char strawberry_packagestring[32];
+    
+    // GhostlyDeath <June 29, 2010> -- Strawberry Connect failed to masquerade as Chocolate
+    snprintf(strawberry_packagestring, 32, "Chocolate Doom %s", PACKAGE_VERSION);
 
     packet = NET_NewPacket(10);
     NET_WriteInt16(packet, NET_PACKET_TYPE_SYN);
     NET_WriteInt32(packet, NET_MAGIC_NUMBER);
-    NET_WriteString(packet, PACKAGE_STRING);
+    NET_WriteString(packet, strawberry_packagestring);
     NET_WriteInt16(packet, gamemode);
     NET_WriteInt16(packet, gamemission);
     NET_WriteInt8(packet, lowres_turn);
@@ -1127,6 +1144,7 @@ boolean NET_CL_Connect(net_addr_t *addr)
 {
     int start_time;
     int last_send_time;
+    boolean strawberry_enhanced = true;
 
     server_addr = addr;
 
@@ -1180,7 +1198,11 @@ boolean NET_CL_Connect(net_addr_t *addr)
 
         if (nowtime - last_send_time > 1000 || last_send_time < 0)
         {
-            NET_CL_SendSYN();
+        	// GhostlyDeath <June 29, 2010> -- Send enhanced packet
+        	if (strawberry_enhanced)
+        		NET_CL_SendSDSYN();
+        	else
+            	NET_CL_SendSYN();
             last_send_time = nowtime;
         }
  
@@ -1188,7 +1210,16 @@ boolean NET_CL_Connect(net_addr_t *addr)
 
         if (nowtime - start_time > 5000)
         {
-            break;
+        	// GhostlyDeath <June 29, 2010> -- Fall back to Chocolate
+        	if (strawberry_enhanced)
+        	{
+        		fprintf(stderr, "NET_CL_Connect: Not responding to Strawberry Doom requests, falling back.\n");
+        		strawberry_enhanced = false;
+        		start_time = I_GetTimeMS();
+			    last_send_time = -1;
+        	}
+        	else
+            	break;
         }
 
         // run client code

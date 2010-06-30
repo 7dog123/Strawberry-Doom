@@ -2,6 +2,7 @@
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 2005 Simon Howard
+// Copyright(C) 2010 GhostlyDeath (ghostlydeath@remood.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +97,7 @@ struct _net_addr_s
 
 typedef enum 
 {
+	/* Chocolate Doom */
     NET_PACKET_TYPE_SYN,
     NET_PACKET_TYPE_ACK,
     NET_PACKET_TYPE_REJECTED,
@@ -111,6 +113,11 @@ typedef enum
     NET_PACKET_TYPE_CONSOLE_MESSAGE,
     NET_PACKET_TYPE_QUERY,
     NET_PACKET_TYPE_QUERY_RESPONSE,
+    
+    /* Strawberry Doom */
+    NET_PACKET_TYPE_START_STRAWBERRY = 2000,			// To not impact on Chocolate Doom (for any addings)
+    NET_PACKET_TYPE_SD_SYN,								// Strawberry Enhanced Connect
+    NET_PACKET_TYPE_SD_ACK,								// Strawberry Enhanced Acknowledge
 } net_packet_type_t;
 
 typedef struct 

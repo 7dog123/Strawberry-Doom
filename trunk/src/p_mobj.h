@@ -287,6 +287,32 @@ typedef struct mobj_s
     
 } mobj_t;
 
+/* particle_t -- A particle of some color */
+// GhostlyDeath <June 29, 2010> -- For special effects
+typedef struct particle_s
+{
+	// Thinker link
+    thinker_t		thinker;
+    
+    // Misc
+    int flags;
 
+    // Info for drawing: position.
+    fixed_t		x;
+    fixed_t		y;
+    fixed_t		z;
+    fixed_t		momx;
+    fixed_t		momy;
+    fixed_t		momz;
+    fixed_t		deltax;
+    fixed_t		deltay;
+    fixed_t		deltaz;
+    int tics;
+    
+    // Based off mobj_T
+    struct particle_s*	snext;
+    struct particle_s*	sprev;
+    struct subsector_s*	subsector;
+} particle_t;
 
 #endif

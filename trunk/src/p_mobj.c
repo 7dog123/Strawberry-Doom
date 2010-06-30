@@ -441,6 +441,38 @@ P_NightmareRespawn (mobj_t* mobj)
     P_RemoveMobj (mobj);
 }
 
+/* P_ParticleThinker() -- Thinker for particles */
+void P_ParticleThinker(particle_t* particle)
+{
+	if (!particle)
+		return;
+	
+	// Run down time
+	if (--particle->tics <= 0)
+	{
+		P_UnsetParticlePosition(particle);
+		P_RemoveThinker(particle);
+	}
+	else
+	{
+		// Set position
+		P_UnsetParticlePosition(particle);
+		particle->x += particle->momx;
+		particle->y += particle->momy;
+		particle->z += particle->momz;
+		P_SetParticlePosition(particle);
+		
+		// Below floor?
+		
+		// Delta move
+		particle->momx += particle->deltax >> 1;
+		particle->deltax >>= 1;
+		particle->momy += particle->deltay >> 1;
+		particle->deltay >>= 1;
+		particle->momz += particle->deltaz >> 1;
+		particle->deltaz >>= 1;
+	}
+}
 
 //
 // P_MobjThinker
@@ -505,6 +537,39 @@ void P_MobjThinker (mobj_t* mobj)
 
 }
 
+/* P_SpawnParticle() -- */
+particle_t* P_SpawnParticle(int tics, int color, fixed_t x, fixed_t y, fixed_t z,
+	fixed_t momx, fixed_t momy, fixed_t momz,
+	fixed_t deltax, fixed_t deltay, fixed_t deltaz)
+{
+    particle_t*	particle;
+    state_t*	st;
+    mobjinfo_t*	info;
+	
+    particle = Z_Malloc (sizeof(*particle), PU_LEVEL, NULL);
+    memset (particle, 0, sizeof (*particle));
+	
+    particle->x = x;
+    particle->y = y;
+	particle->z = z;
+    particle->momx = momx;
+    particle->momy = momy;
+	particle->momz = momz;
+    particle->deltax = deltax;
+    particle->deltay = deltay;
+	particle->deltaz = deltaz;
+	particle->tics = tics;
+    
+    // set subsector and/or block links
+    P_SetParticlePosition (particle);
+	
+
+    particle->thinker.function.acp1 = (actionf_p1)P_ParticleThinker;
+	
+    P_AddThinker (&particle->thinker);
+
+    return particle;
+}
 
 //
 // P_SpawnMobj
