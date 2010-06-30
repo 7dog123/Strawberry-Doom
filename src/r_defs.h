@@ -408,6 +408,7 @@ typedef struct vissprite_s
     lighttable_t*	colormap;
    
     int			mobjflags;
+    int			purecolor;
     
 } vissprite_t;
 
