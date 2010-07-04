@@ -393,6 +393,16 @@ boolean PIT_CheckThing (mobj_t* thing)
 // MOVEMENT CLIPPING
 //
 
+/* P_CheckParticlePosition() -- Checks position of particle */
+boolean
+P_CheckParticlePosition
+( particle_t*	particle,
+  fixed_t	x,
+  fixed_t	y )
+{
+    return true;
+}
+
 //
 // P_CheckPosition
 // This is purely informative, nothing is modified
@@ -487,6 +497,176 @@ P_CheckPosition
     return true;
 }
 
+/* PIT_ParticleICEP() -- Particle interceptor */
+static fixed_t pc_x = 0;
+static fixed_t pc_y = 0;
+
+boolean PIT_ParticleICEP(intercept_t* in)
+{
+	fixed_t frac;
+	line_t* li = NULL;
+	
+	/* Must be a line */
+	if (in->isaline)
+	{
+		// Set
+		li = in->d.line;
+		
+		// Solid wall?
+		if (!(li->flags & ML_TWOSIDED))
+		{
+			// Move closer
+			frac = in->frac - FixedDiv (4*FRACUNIT, P_AproxDistance(trace.dx, trace.dy));
+			pc_x = trace.x + FixedMul (trace.dx, frac);
+			pc_y = trace.y + FixedMul (trace.dy, frac);
+			
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/* Ignore */
+	else
+		return false;
+#if 0
+if (in->isaline)
+    {
+	li = in->d.line;
+	
+	if (li->special)
+	    P_ShootSpecialLine (shootthing, li);
+
+	if ( !(li->flags & ML_TWOSIDED) )
+	    goto hitline;
+	
+	// crosses a two sided line
+	P_LineOpening (li);
+		
+	dist = FixedMul (attackrange, in->frac);
+
+        // Check if backsector is NULL.  See comment in PTR_AimTraverse.
+
+	if (li->backsector == NULL)
+        {
+            goto hitline;
+        }
+
+        if (li->frontsector->floorheight != li->backsector->floorheight)
+	{
+	    slope = FixedDiv (openbottom - shootz , dist);
+	    if (slope > aimslope)
+		goto hitline;
+	}
+		
+	if (li->frontsector->ceilingheight != li->backsector->ceilingheight)
+	{
+	    slope = FixedDiv (opentop - shootz , dist);
+	    if (slope < aimslope)
+		goto hitline;
+	}
+
+	// shot continues
+	return true;
+	
+	
+	// hit line
+      hitline:
+	// position a bit closer
+	frac = in->frac - FixedDiv (4*FRACUNIT,attackrange);
+	x = trace.x + FixedMul (trace.dx, frac);
+	y = trace.y + FixedMul (trace.dy, frac);
+	z = shootz + FixedMul (aimslope, FixedMul(frac, attackrange));
+
+	if (li->frontsector->ceilingpic == skyflatnum)
+	{
+	    // don't shoot the sky!
+	    if (z > li->frontsector->ceilingheight)
+		return false;
+	    
+	    // it's a sky hack wall
+	    if	(li->backsector && li->backsector->ceilingpic == skyflatnum)
+		return false;		
+	}
+
+	// Spawn bullet puffs.
+	P_SpawnPuff (x,y,z);
+	
+	// GhostlyDeath <June 29, 2010> -- Particle
+	j = (M_Random() % 3) + 1;
+	for (i = 0; i < j; i++)
+		P_SpawnParticle((M_Random() % 9) + 1, (224 + (M_Random() % 7)) | 0x300,
+			x, y, z,
+			((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1),
+			((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
+			);
+	
+	// don't go any farther
+	return false;	
+    }
+
+	return true;
+#endif
+}
+
+/* P_TryParticleMove() -- Try moving a particle */
+boolean P_TryParticleMove(particle_t* particle, fixed_t x, fixed_t y)
+{
+	fixed_t oldx, oldy;	
+	
+	/* Prepare */
+	pc_x = particle->x;
+	pc_y = particle->y;
+	
+	/* Move OK! (Line is fine) */
+	if (P_PathTraverse(
+			particle->x,
+			particle->y,
+			x,
+			y,
+			PT_ADDLINES,
+			PIT_ParticleICEP
+		))
+	{
+		// Move
+		P_UnsetParticlePosition (particle);
+
+		oldx = particle->x;
+		oldy = particle->y;	
+		particle->x = x;
+		particle->y = y;
+
+		P_SetParticlePosition (particle);
+		
+		// Return true
+		return true;
+	}
+	
+	/* Move failed */
+	else
+	{
+		// Slide
+		if (particle->color & 0x800)		// No bounce
+		{
+			P_UnsetParticlePosition (particle);
+				
+			particle->x = pc_x;
+			particle->y = pc_y;
+
+			P_SetParticlePosition (particle);
+		}
+		
+		// Bounce off wall
+		else
+		{
+		}
+		
+		// Return false
+		return false;
+	}
+
+	
+}
 
 //
 // P_TryMove
