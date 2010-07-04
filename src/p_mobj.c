@@ -455,7 +455,87 @@ void P_ParticleThinker(particle_t* particle)
 	}
 	else
 	{
-		// Set position
+		/* Sliding down? */
+		if (particle->color & 0x1000)
+		{
+			particle->z -= GRAVITY >> 2;
+			
+			if (particle->z < particle->subsector->sector->floorheight)
+				particle->tics = 0;
+			else
+				particle->tics++;
+		}
+		
+		/* Flying */
+		else
+		{
+			/* Try moving the particle */
+			if (P_TryParticleMove(particle, particle->x + particle->momx, particle->y + particle->momy))
+			{
+				particle->z += particle->momz;
+			}
+		
+			/* A wall or (thing in the future) is in the way */
+			else
+			{
+				// Swap all momentum
+				if (particle->color & 0x800)		// No bounce
+				{
+					particle->momx = 0;
+					particle->momy = 0;
+					particle->momz = 0;
+				
+					// Slide down
+					particle->color |= 0x1000;
+					particle->tics++;
+				}
+				else
+				{
+					//particle->momx = -particle->momx;
+					//particle->momy = -particle->momy;
+					//particle->momz = -particle->momz;
+				}
+			}
+		
+			/* Z Axis Move */
+			if (particle->color & 0x200)
+			{
+				if (particle->z < particle->subsector->sector->floorheight)
+				{
+					if (particle->color & 0x800)
+						particle->momz = particle->deltaz = 0;
+					else
+						particle->momz = -particle->momz;
+					
+					particle->z = particle->subsector->sector->floorheight;
+				}
+	
+				if (particle->z > particle->subsector->sector->ceilingheight)
+				{
+					if (particle->color & 0x800)
+					{
+						particle->momz = -1 << FRACBITS;
+						particle->deltaz = 0;
+					}
+					else
+						particle->momz = -particle->momz;
+					
+					particle->z = particle->subsector->sector->ceilingheight;
+				}
+			}
+			
+			// Delta move on Z
+			particle->momz += particle->deltaz >> 1;
+			particle->deltaz >>= 1;
+		
+			// Gravity?
+			if (particle->z > particle->subsector->sector->floorheight)
+				if (particle->color & 0x800)
+					particle->deltaz = -GRAVITY;
+			
+		}
+		
+#if 0
 		P_UnsetParticlePosition(particle);
 		particle->x += particle->momx;
 		particle->y += particle->momy;
@@ -492,6 +572,7 @@ void P_ParticleThinker(particle_t* particle)
 		// Gravity?
 		if (particle->color & 0x800)
 			particle->deltaz = -GRAVITY;
+#endif
 	}
 }
 

@@ -456,6 +456,9 @@ P_SetThingPosition (mobj_t* thing)
 /* P_UnsetParticlePosition() -- */
 void P_UnsetParticlePosition (particle_t* particle)
 {
+    int		blockx;
+    int		blocky;
+    
 	if (particle->snext)
 	    particle->snext->sprev = particle->sprev;
 
@@ -472,6 +475,9 @@ P_SetParticlePosition (particle_t* particle)
 {
     subsector_t*	ss;
     sector_t*		sec;
+    int			blockx;
+    int			blocky;
+    mobj_t**		link;
     
     // link into subsector
     ss = R_PointInSubsector (particle->x,particle->y);
@@ -568,6 +574,9 @@ P_BlockThingsIterator
 	 mobj ;
 	 mobj = mobj->bnext)
     {
+    if (((thinker_t*)mobj)->function.acp1 == P_ParticleThinker)
+    	continue;
+    
 	if (!func( mobj ) )
 	    return false;
     }

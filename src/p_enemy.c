@@ -1609,7 +1609,46 @@ void A_Fall (mobj_t *actor)
 //
 void A_Explode (mobj_t* thingy)
 {
+	int i, c, j, k;
+	angle_t a;
+	fixed_t x, y, z;
+	
     P_RadiusAttack(thingy, thingy->target, 128);
+    
+    // GhostlyDeath <June 30, 2010> -- Particles
+    k = (M_Random() % 2) + 1;
+    for (j = 0; j < k; j++)
+		for (i = 0; i < 16; i++)
+		{
+			// Get angle
+			a = (ANG45 >> 1) * i;
+			
+			// Ring
+			x = finecosine[a >> ANGLETOFINESHIFT];
+			y = finesine[a >> ANGLETOFINESHIFT];
+			z = (M_Random() % ((thingy->height >> FRACBITS) + 1)) << FRACBITS;
+			
+			// Color
+			switch (M_Random() % 3)
+			{
+				case 0:
+					c = (224 + (M_Random() % 7));
+					break;
+				case 1:
+					c = (208 + (M_Random() % 15));
+					break;
+				case 2:
+					c = (168 + (M_Random() % 7));
+					break;
+			}
+			
+			// Create circle particle
+			P_SpawnParticle((M_Random() % 15) + 15, c | 0x300,
+				thingy->x, thingy->y, thingy->z + z,
+				x << (M_Random() % 3), y << (M_Random() % 3), ((M_Random() % 4) - 2) << FRACBITS,
+				((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
+				);
+		}
 }
 
 // Check whether the death of the specified monster type is allowed

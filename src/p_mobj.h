@@ -210,27 +210,28 @@ typedef struct mobj_s
 {
     // List: thinker links.
     thinker_t		thinker;
+    
+    
+    // Interaction info, by BLOCKMAP.
+    // Links in blocks (if needed).
+    struct mobj_s*	bnext;
+    struct mobj_s*	bprev;
+    
+    // More list: links in sector (if needed)
+    struct mobj_s*	snext;
+    struct mobj_s*	sprev;
+    
+    struct subsector_s*	subsector;
 
     // Info for drawing: position.
     fixed_t		x;
     fixed_t		y;
     fixed_t		z;
 
-    // More list: links in sector (if needed)
-    struct mobj_s*	snext;
-    struct mobj_s*	sprev;
-
     //More drawing info: to determine current sprite.
     angle_t		angle;	// orientation
     spritenum_t		sprite;	// used to find patch_t and flip value
     int			frame;	// might be ORed with FF_FULLBRIGHT
-
-    // Interaction info, by BLOCKMAP.
-    // Links in blocks (if needed).
-    struct mobj_s*	bnext;
-    struct mobj_s*	bprev;
-    
-    struct subsector_s*	subsector;
 
     // The closest interval over all contacted Sectors.
     fixed_t		floorz;
@@ -294,6 +295,13 @@ typedef struct particle_s
 	// Thinker link
     thinker_t		thinker;
     
+    // Based off mobj_T
+    struct mobj_s*	bnext;
+    struct mobj_s*	bprev;
+    struct particle_s*	snext;
+    struct particle_s*	sprev;
+    struct subsector_s*	subsector;
+    
     // Misc
     int flags;
 
@@ -311,10 +319,6 @@ typedef struct particle_s
     int color;
     int tics;
     
-    // Based off mobj_T
-    struct particle_s*	snext;
-    struct particle_s*	sprev;
-    struct subsector_s*	subsector;
 } particle_t;
 
 #endif
