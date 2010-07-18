@@ -1,3 +1,9 @@
+2010-07-18 14:12:41 GhostlyDeath
+	
+	Strawberry Doom:
+		Add configure option: --enable-max-optimization (-O3 -g0)
+		Add configure option: --enable-max-debug (-O0 -g3)
+
 2010-06-30 00:50:07 GhostlyDeath
 
 	Strawberry Doom:
