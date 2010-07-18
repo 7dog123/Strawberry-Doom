@@ -1,5 +1,7 @@
 Strawberry Doom 1.4.0 (WHO KNOWS):
 	* Rebrand and uncredit that fraggle guy. This project is mine now!
+	* Add configure option: --enable-max-optimization (-O3 -g0)
+	* Add configure option: --enable-max-debug (-O0 -g3)
 
 Chocolate Doom 1.4.0 (2010-??-??):
 
