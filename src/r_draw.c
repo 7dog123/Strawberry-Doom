@@ -257,15 +257,26 @@ void R_DrawColumnLow (void)
     fracstep = dc_iscale; 
     frac = dc_texturemid + (dc_yl-centery)*fracstep;
     
-    do 
-    {
-	// Hack. Does not work corretly.
-	*dest2 = *dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
-	dest += SCREENWIDTH;
-	dest2 += SCREENWIDTH;
-	frac += fracstep; 
+    if (dc_purecolor)
+		do 
+		{
+		// Hack. Does not work corretly.
+		*dest2 = *dest = dc_colormap[dc_purecolor];
+		dest += SCREENWIDTH;
+		dest2 += SCREENWIDTH;
+		frac += fracstep; 
 
-    } while (count--);
+		} while (count--);
+    else
+		do 
+		{
+		// Hack. Does not work corretly.
+		*dest2 = *dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
+		dest += SCREENWIDTH;
+		dest2 += SCREENWIDTH;
+		frac += fracstep; 
+
+		} while (count--);
 }
 
 
