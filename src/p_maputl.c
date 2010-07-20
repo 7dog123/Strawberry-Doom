@@ -43,6 +43,10 @@
 // State.
 #include "r_state.h"
 
+
+extern fixed_t pc_x;
+extern fixed_t pc_y;
+
 //
 // P_AproxDistance
 // Gives an estimation of distance (not exact)
@@ -651,6 +655,8 @@ PIT_AddLineIntercepts (line_t* ld)
 	
     intercept_p->frac = frac;
     intercept_p->isaline = true;
+    intercept_p->x = pc_x;
+    intercept_p->y = pc_y;
     intercept_p->d.line = ld;
     InterceptsOverrun(intercept_p - intercepts, intercept_p);
     intercept_p++;
@@ -909,6 +915,8 @@ static void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
 // Returns true if the traverser function returns true
 // for all lines.
 //
+
+
 boolean
 P_PathTraverse
 ( fixed_t		x1,
@@ -1015,6 +1023,9 @@ P_PathTraverse
 	
     for (count = 0 ; count < 64 ; count++)
     {
+    	pc_x = mapx << FRACBITS;
+    	pc_y = mapy << FRACBITS;
+    	
 	if (flags & PT_ADDLINES)
 	{
 	    if (!P_BlockLinesIterator (mapx, mapy,PIT_AddLineIntercepts))

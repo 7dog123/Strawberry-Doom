@@ -498,8 +498,8 @@ P_CheckPosition
 }
 
 /* PIT_ParticleICEP() -- Particle interceptor */
-static fixed_t pc_x = 0;
-static fixed_t pc_y = 0;
+fixed_t pc_x = 0;
+fixed_t pc_y = 0;
 
 boolean PIT_ParticleICEP(intercept_t* in)
 {
@@ -513,12 +513,14 @@ boolean PIT_ParticleICEP(intercept_t* in)
 		li = in->d.line;
 		
 		// Solid wall?
-		if (!(li->flags & ML_TWOSIDED))
+		if ((li->flags & ML_BLOCKING))
 		{
+			printf(">> %i %i\n", (li->flags & ML_TWOSIDED), (li->flags & ML_BLOCKING));
 			// Move closer
-			frac = in->frac - FixedDiv (4*FRACUNIT, P_AproxDistance(trace.dx, trace.dy));
+			frac = in->frac - FixedDiv (4*FRACUNIT, MELEERANGE);
 			pc_x = trace.x + FixedMul (trace.dx, frac);
 			pc_y = trace.y + FixedMul (trace.dy, frac);
+			printf("%i %i %g %g\n", pc_x, pc_y, (double)pc_x / 65536.0, (double)pc_y / 65536.0);
 			
 			return false;
 		}
@@ -528,7 +530,7 @@ boolean PIT_ParticleICEP(intercept_t* in)
 	
 	/* Ignore */
 	else
-		return false;
+		return true;
 #if 0
 if (in->isaline)
     {
@@ -612,6 +614,15 @@ if (in->isaline)
 /* P_TryParticleMove() -- Try moving a particle */
 boolean P_TryParticleMove(particle_t* particle, fixed_t x, fixed_t y)
 {
+#if 1
+	P_UnsetParticlePosition (particle);
+
+	particle->x = x;
+	particle->y = y;
+
+	P_SetParticlePosition (particle);
+	return true;
+#else
 	fixed_t oldx, oldy;	
 	
 	/* Prepare */
@@ -649,9 +660,11 @@ boolean P_TryParticleMove(particle_t* particle, fixed_t x, fixed_t y)
 		if (particle->color & 0x800)		// No bounce
 		{
 			P_UnsetParticlePosition (particle);
-				
+			
+			printf("was %f %f ", (double)particle->x / 65536.0, (double)particle->y / 65536.0);
 			particle->x = pc_x;
 			particle->y = pc_y;
+			printf("now %f %f\n", (double)particle->x / 65536.0, (double)particle->y / 65536.0);
 
 			P_SetParticlePosition (particle);
 		}
@@ -664,7 +677,7 @@ boolean P_TryParticleMove(particle_t* particle, fixed_t x, fixed_t y)
 		// Return false
 		return false;
 	}
-
+#endif
 	
 }
 
