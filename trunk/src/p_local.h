@@ -156,6 +156,8 @@ typedef struct
 	mobj_t*	thing;
 	line_t*	line;
     }			d;
+    fixed_t x;
+    fixed_t y;
 } intercept_t;
 
 // Extended MAXINTERCEPTS, to allow for intercepts overrun emulation.

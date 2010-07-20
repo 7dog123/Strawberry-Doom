@@ -4,6 +4,7 @@ Strawberry Doom 1.4.0 (WHO KNOWS):
 	* Add configure option: --enable-max-debug (-O0 -g3)
 	* Enable loading of PWAD DEHACKED Lump (-nointernaldeh to disable)
 	* Add -flip which flips levels.
+	* Random sound pitch.
 
 Chocolate Doom 1.4.0 (2010-??-??):
 

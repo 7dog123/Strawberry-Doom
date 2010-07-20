@@ -1645,7 +1645,7 @@ void A_Explode (mobj_t* thingy)
 			// Create circle particle
 			P_SpawnParticle((M_Random() % 15) + 15, c | 0x300,
 				thingy->x, thingy->y, thingy->z + z,
-				x << (M_Random() % 3), y << (M_Random() % 3), ((M_Random() % 4) - 2) << FRACBITS,
+				x << ((M_Random() % 3) + 1), y << ((M_Random() % 3) + 1), ((M_Random() % 4) - 2) << FRACBITS,
 				((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
 				);
 		}
