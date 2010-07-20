@@ -1129,6 +1129,25 @@ void D_DoomMain (void)
 	    D_AddFile(filename);
         }
     }
+    
+#ifdef FEATURE_DEHACKED
+	//!
+    // @arg <files>
+    // @category mod
+    //
+    // Does not load internal (in PWAD) DEHACKED lump.
+    //
+    
+    p = M_CheckParm("-nointernaldeh");
+	
+	if (!p)
+		// GhostlyDeath <July 20, 2010> -- Load dehacked lump (if it exists)
+		if (W_CheckNumForName("DEHACKED") != -1)
+		{
+			printf("D_Main: Loading DEHACKED lump.\n");
+			DEH_LoadFile("DEHACKED");
+		}
+#endif
 
     // Debug:
 //    W_PrintDirectory();
