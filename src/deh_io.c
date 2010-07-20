@@ -35,6 +35,8 @@
 #include "deh_defs.h"
 #include "deh_io.h"
 
+#include "w_wad.h"
+
 struct deh_context_s
 {
     FILE *stream;
@@ -43,6 +45,11 @@ struct deh_context_s
     boolean last_was_newline;
     char *readbuffer;
     int readbuffer_size;
+    
+    int IsInternal;
+    int InternalOffset;
+    int LumpLen;
+    char* LumpData;
 };
 
 // Open a dehacked file for reading
@@ -52,22 +59,43 @@ deh_context_t *DEH_OpenFile(char *filename)
 {
     FILE *fstream;
     deh_context_t *context;
+    void* Data;
+    int lNum;
     
-    fstream = fopen(filename, "r");
+    // GhostlyDeath <July 20, 2010> -- Check internal existence
+    if ((lNum = W_CheckNumForName(filename)) != -1)
+    {
+		context = Z_Malloc(sizeof(*context), PU_STATIC, NULL);
+		context->stream = NULL;
+		
+		// Read entire file
+		context->IsInternal = 1;
+		context->InternalOffset = 0;
+		context->LumpLen = W_LumpLength(lNum);
+		context->LumpData = W_CacheLumpNum(lNum, PU_STATIC);
+    }
+    else
+    {
+		fstream = fopen(filename, "r");
 
-    if (fstream == NULL)
-        return NULL;
+		if (fstream == NULL)
+		    return NULL;
 
-    context = Z_Malloc(sizeof(*context), PU_STATIC, NULL);
-    context->stream = fstream;
-    
-    // Initial read buffer size of 128 bytes
-
-    context->readbuffer_size = 128;
-    context->readbuffer = Z_Malloc(context->readbuffer_size, PU_STATIC, NULL);
-    context->filename = filename;
-    context->linenum = 0;
-    context->last_was_newline = true;
+		context = Z_Malloc(sizeof(*context), PU_STATIC, NULL);
+		context->stream = fstream;
+		
+		context->IsInternal = 0;
+		context->InternalOffset = 0;
+		context->LumpLen = 0;
+		context->LumpData = 0;
+	}
+	
+	// Initial read buffer size of 128 bytes
+	context->readbuffer_size = 128;
+	context->readbuffer = Z_Malloc(context->readbuffer_size, PU_STATIC, NULL);
+	context->filename = filename;
+	context->linenum = 0;
+	context->last_was_newline = true;
 
     return context;
 }
@@ -76,9 +104,12 @@ deh_context_t *DEH_OpenFile(char *filename)
 
 void DEH_CloseFile(deh_context_t *context)
 {
-    fclose(context->stream);
-    Z_Free(context->readbuffer);
-    Z_Free(context);
+	if (context->IsInternal)
+		Z_Free(context->LumpData);
+	else
+		fclose(context->stream);
+	Z_Free(context->readbuffer);
+	Z_Free(context);
 }
 
 // Reads a single character from a dehacked file
@@ -86,24 +117,39 @@ void DEH_CloseFile(deh_context_t *context)
 int DEH_GetChar(deh_context_t *context)
 {
     int result;
-   
+    
     // Read characters, but ignore carriage returns
     // Essentially this is a DOS->Unix conversion
+    
+    // GhostlyDeath <July 20, 2010> -- Internal lump
+    if (context->IsInternal)
+	{
+		// EOF?
+		do
+		{
+			if (context->InternalOffset > context->LumpLen)
+				return -1;
+			result = context->LumpData[context->InternalOffset++];
+		}
+		while (result == '\r');
+	}
+	else
+   	{
+		do 
+		{
+		    if (feof(context->stream))
+		    {
+		        // end of file
 
-    do 
-    {
-        if (feof(context->stream))
-        {
-            // end of file
+		        result = -1;
+		    }
+		    else
+		    {
+		        result = fgetc(context->stream);
+		    }
 
-            result = -1;
-        }
-        else
-        {
-            result = fgetc(context->stream);
-        }
-
-    } while (result == '\r');
+		} while (result == '\r');
+	}
 
     // Track the current line number
 
