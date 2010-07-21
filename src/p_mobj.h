@@ -211,6 +211,10 @@ typedef struct mobj_s
     // List: thinker links.
     thinker_t		thinker;
     
+    // Info for drawing: position.
+    fixed_t		x;
+    fixed_t		y;
+    fixed_t		z;
     
     // Interaction info, by BLOCKMAP.
     // Links in blocks (if needed).
@@ -222,11 +226,6 @@ typedef struct mobj_s
     struct mobj_s*	sprev;
     
     struct subsector_s*	subsector;
-
-    // Info for drawing: position.
-    fixed_t		x;
-    fixed_t		y;
-    fixed_t		z;
 
     //More drawing info: to determine current sprite.
     angle_t		angle;	// orientation
@@ -295,6 +294,11 @@ typedef struct particle_s
 	// Thinker link
     thinker_t		thinker;
     
+    // Info for drawing: position.
+    fixed_t		x;
+    fixed_t		y;
+    fixed_t		z;
+    
     // Based off mobj_T
     struct mobj_s*	bnext;
     struct mobj_s*	bprev;
@@ -305,10 +309,6 @@ typedef struct particle_s
     // Misc
     int flags;
 
-    // Info for drawing: position.
-    fixed_t		x;
-    fixed_t		y;
-    fixed_t		z;
     fixed_t		momx;
     fixed_t		momy;
     fixed_t		momz;
