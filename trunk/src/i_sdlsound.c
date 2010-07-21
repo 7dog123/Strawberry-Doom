@@ -48,6 +48,8 @@
 
 #include "doomdef.h"
 
+#define FEATURE_RANDSOUNDPITCH
+
 #define LOW_PASS_FILTER
 #define MAX_SOUND_SLICE_TIME 70 /* ms */
 #define NUM_CHANNELS 16
@@ -56,19 +58,16 @@ static boolean sound_initialized = false;
 
 static Mix_Chunk sound_chunks[NUMSFX];
 static int channels_playing[NUM_CHANNELS];
+
+#ifdef FEATURE_RANDSOUNDPITCH
 static Mix_Chunk ToyChunks[NUMSFX][NUM_CHANNELS];
+#endif
 
 static int mixer_freq;
 static Uint16 mixer_format;
 static int mixer_channels;
 
 int use_libsamplerate = 0;
-
-/* I_SDL_PitchBendFun() -- Messes with a sound adding variable pitch support */
-// GhostlyDeath <July 20, 2010> -- Has fun with a sound
-void I_SDL_PitchBendFun(void *udata, Uint8 *stream, int len)
-{
-}
 
 // When a sound stops, check if it is still playing.  If it is not, 
 // we can mark the sound data as CACHE to be freed back for other
@@ -98,18 +97,21 @@ static void ReleaseSoundOnChannel(int channel)
 
         if (channels_playing[i] == id)
         {
+#ifdef FEATURE_RANDSOUNDPITCH
 			if (ToyChunks[id][channel].abuf)
 				Z_Free(ToyChunks[id][channel].abuf);
 			ToyChunks[id][channel].allocated = ToyChunks[id][channel].alen = ToyChunks[id][channel].abuf = NULL;
+#endif
             return;
         }
     }
 
     // Not used on any channel, and can be safely released
-    
+#ifdef FEATURE_RANDSOUNDPITCH
     if (ToyChunks[id][channel].abuf)
 	    Z_Free(ToyChunks[id][channel].abuf);
 	ToyChunks[id][channel].allocated = ToyChunks[id][channel].alen = ToyChunks[id][channel].abuf = NULL;
+#endif
     Z_ChangeTag(sound_chunks[id].abuf, PU_CACHE);
 }
 
@@ -588,7 +590,6 @@ static void I_SDL_UpdateSoundParams(int handle, int vol, int sep)
 //  is set, but currently not used by mixing.
 //
 
-#define FEATURE_RANDSOUNDPITCH
 static int I_SDL_StartSound(int id, int channel, int vol, int sep)
 {
     Mix_Chunk *chunk;
@@ -604,6 +605,8 @@ static int I_SDL_StartSound(int id, int channel, int vol, int sep)
     {
         return -1;
     }
+    
+    printf("SDL  :%s\n", S_sfx[id].name);
 
     // Release a sound effect if there is already one playing
     // on this channel
@@ -626,7 +629,7 @@ static int I_SDL_StartSound(int id, int channel, int vol, int sep)
 	do
 	{
 		PitchScale = ((double)127) / ((double)((int)M_Random() + 1));
-	} while (PitchScale < 0.75 || PitchScale > 1.25);
+	} while (PitchScale < 0.80 || PitchScale > 1.20);
 	
 	// Get new buffer
 	ToyChunks[id][channel].allocated = 1;
@@ -635,9 +638,7 @@ static int I_SDL_StartSound(int id, int channel, int vol, int sep)
 	ToyChunks[id][channel].volume = MIX_MAX_VOLUME;
 	
 	memset(ToyChunks[id][channel].abuf, 0, ToyChunks[id][channel].alen);
-	//printf("%i * %g = %i\n", chunk->alen, PitchScale, ToyChunks[id][channel].alen);
 	
-#if 1
 	// Get 16-bit pointers from in and out
 	InP = chunk->abuf;
 	OutP = ToyChunks[id][channel].abuf;
@@ -650,19 +651,10 @@ static int I_SDL_StartSound(int id, int channel, int vol, int sep)
 		for (i = 0; i < 2; i++)
 			OutP[(OutPos * 2) + i] = InP[((int)Position * 2) + i];
 	
-#else
-	// Convert
-	for (OutPos = 0, Position = 0.0; OutPos < ToyChunks[id][channel].alen && Position < (double)chunk->alen; Position += PitchScale, OutPos++)
-	{
-		//printf("%i %g\n", OutPos, Position);
-		ToyChunks[id][channel].abuf[OutPos] = chunk->abuf[(int)Position];
-		//printf("[%i] %x <- [%i] %x\n", OutPos, ToyChunks[id][channel].abuf[OutPos], (int)Position, chunk->abuf[(int)Position]);
-	}
-#endif
-	
 	// Now play
 	Mix_PlayChannelTimed(channel, &ToyChunks[id][channel], 0, -1);
 #else
+	// Now play
     Mix_PlayChannelTimed(channel, chunk, 0, -1);
 #endif
 
