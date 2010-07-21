@@ -605,9 +605,7 @@ static int I_SDL_StartSound(int id, int channel, int vol, int sep)
     {
         return -1;
     }
-    
-    printf("SDL  :%s\n", S_sfx[id].name);
-
+	
     // Release a sound effect if there is already one playing
     // on this channel
 
