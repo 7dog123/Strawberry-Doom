@@ -979,7 +979,6 @@ void D_DoomMain (void)
 
     DEH_printf("W_Init: Init WADfiles.\n");
     D_AddFile(iwadfile);
-    D_AddFile("strawberry-doom.wad");
 
 #ifdef FEATURE_WAD_MERGE
 
