@@ -722,40 +722,21 @@ P_KillMobj
 	
     }
 
-    if (target->health < -target->info->spawnhealth 
-	&& target->info->xdeathstate)
-    {
+    if (target->health < -target->info->spawnhealth && target->info->xdeathstate)
 		P_SetMobjState (target, target->info->xdeathstate);
-		
-		j = (M_Random() % 50) + 50;
-		for (i = 0; i < j; i++)
-		{
-			// At random height in Z
-			zz = target->z + (target->height % ((M_Random() + 1) << FRACBITS));
-			
-			// Spawn it
-			P_SpawnParticle((M_Random() % 15) + 35, (176 + (M_Random() % 15)) | 0x800 | 0x200,
-				target->x, target->y, zz,
-				((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1), ((M_Random() % 8) - 4) << (FRACBITS + 1),
-				((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS, ((M_Random() % 8) - 4) << FRACBITS
-				);
-		}
-    }
     else
-	P_SetMobjState (target, target->info->deathstate);
+		P_SetMobjState (target, target->info->deathstate);
     target->tics -= P_Random()&3;
 
     if (target->tics < 1)
-	target->tics = 1;
+		target->tics = 1;
 		
     //	I_StartSound (&actor->r, actor->info->deathsound);
 
     // In Chex Quest, monsters don't drop items.
 
     if (gameversion == exe_chex)
-    {
         return;
-    }
 
     // Drop stuff.
     // This determines the kind of object spawned
@@ -843,31 +824,6 @@ P_DamageMobj
 				target->y);
 		
 	thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
-	
-	if (!(target->flags & MF_NOBLOOD))
-	{
-		j = (M_Random() % 3) + ((damage / ((M_Random() % 2) + 2)));
-		for (i = 0; i < j; i++)
-		{
-			// GhostlyDeath <June 29, 2010> -- Particle
-			BlastAngleZ = R_PointToAngle2(
-					inflictor->y,
-					(inflictor->z + inflictor->height) >> 1,
-					target->y,
-					(target->z + target->height) >> 1
-				);
-	
-			P_SpawnParticle((M_Random() % 7) + 12, (176 + (M_Random() % 15)) | 0x800 | 0x200,
-				target->x, target->y, (target->z + target->height) >> 1,
-				FixedMul(finecosine[ang >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
-					FixedMul(finesine[ang >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
-					FixedMul(finesine[BlastAngleZ >> ANGLETOFINESHIFT], 15 << FRACBITS) + (((M_Random() % 3) - 1) << FRACBITS),
-				finecosine[ang >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
-					finesine[ang >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS),
-					finesine[BlastAngleZ >> ANGLETOFINESHIFT] + (((M_Random() % 3) - 1) << FRACBITS)
-				);
-		}
-	}
 
 	// make fall forwards sometimes
 	if ( damage < 40

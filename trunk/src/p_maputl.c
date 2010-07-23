@@ -456,49 +456,6 @@ P_SetThingPosition (mobj_t* thing)
     }
 }
 
-
-/* P_UnsetParticlePosition() -- */
-void P_UnsetParticlePosition (particle_t* particle)
-{
-    int		blockx;
-    int		blocky;
-    
-	if (particle->snext)
-	    particle->snext->sprev = particle->sprev;
-
-	if (particle->sprev)
-	    particle->sprev->snext = particle->snext;
-	else
-	    particle->subsector->sector->particlelist = particle->snext;
-}
-
-
-/* P_SetParticlePosition() -- */
-void
-P_SetParticlePosition (particle_t* particle)
-{
-    subsector_t*	ss;
-    sector_t*		sec;
-    int			blockx;
-    int			blocky;
-    mobj_t**		link;
-    
-    // link into subsector
-    ss = R_PointInSubsector (particle->x,particle->y);
-    particle->subsector = ss;
-    
-	// invisible things don't go into the sector links
-	sec = ss->sector;
-	
-	particle->sprev = NULL;
-	particle->snext = sec->particlelist;
-
-	if (sec->particlelist)
-	    sec->particlelist->sprev = particle;
-
-	sec->particlelist = particle;
-}
-
 //
 // BLOCK MAP ITERATORS
 // For each line/thing in the given mapblock,
@@ -578,8 +535,6 @@ P_BlockThingsIterator
 	 mobj ;
 	 mobj = mobj->bnext)
     {
-    if (((thinker_t*)mobj)->function.acp1 == P_ParticleThinker)
-    	continue;
     
 	if (!func( mobj ) )
 	    return false;

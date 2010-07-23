@@ -127,7 +127,6 @@ typedef	struct
 
     // list of mobjs in sector
     mobj_t*	thinglist;
-    particle_t* particlelist;
 
     // thinker_t for reversable actions
     void*	specialdata;
