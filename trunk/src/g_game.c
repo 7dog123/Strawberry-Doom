@@ -737,7 +737,9 @@ static void SetJoyButtons(unsigned int buttons_mask)
 // Get info needed to make ticcmd_ts for the players.
 // 
 boolean G_Responder (event_t* ev) 
-{ 
+{
+	int LastDisplayPlayer = displayplayer;
+	
     // allow spy mode changes even during the demo
     if (gamestate == GS_LEVEL && ev->type == ev_keydown 
      && ev->data1 == KEY_F12 && (singledemo || !deathmatch) )
@@ -749,6 +751,17 @@ boolean G_Responder (event_t* ev)
 	    if (displayplayer == MAXPLAYERS) 
 		displayplayer = 0; 
 	} while (!playeringame[displayplayer] && displayplayer != consoleplayer); 
+	
+	// Change of displayplayer in a demo?
+	if (demoplayback && displayplayer != LastDisplayPlayer)
+	{
+		// Change console player around
+		consoleplayer = displayplayer;
+		WI_F12Update();
+		AM_F12Update();
+		HU_Start();
+		ST_Start();
+	}
 	return true; 
     }
     
@@ -1288,6 +1301,9 @@ void G_SecretExitLevel (void)
 void G_DoCompleted (void) 
 { 
     int             i; 
+    
+    // GhostlyDeath <July 23, 2010> -- Clean scoreboard stuff up
+    HU_ForgetScoreboardStuff();
 	 
     gameaction = ga_nothing; 
  
