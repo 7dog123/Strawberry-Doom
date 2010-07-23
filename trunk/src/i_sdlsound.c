@@ -68,6 +68,7 @@ static Uint16 mixer_format;
 static int mixer_channels;
 
 int use_libsamplerate = 0;
+int snd_randomsoundpitch = 1;
 
 // When a sound stops, check if it is still playing.  If it is not, 
 // we can mark the sound data as CACHE to be freed back for other
@@ -622,38 +623,47 @@ static int I_SDL_StartSound(int id, int channel, int vol, int sep)
 
     // play sound
 #ifdef FEATURE_RANDSOUNDPITCH
-	// Change pitch
-	PitchScale = 0.0;
-	do
+	if (snd_randomsoundpitch)
 	{
-		PitchScale = ((double)127) / ((double)((int)M_Random() + 1));
-	} while (PitchScale < 0.80 || PitchScale > 1.20);
+		// Change pitch
+		PitchScale = 0.0;
+		do
+		{
+			PitchScale = ((double)127) / ((double)((int)M_Random() + 1));
+		} while (PitchScale < 0.80 || PitchScale > 1.20);
 	
-	// Get new buffer
-	ToyChunks[id][channel].allocated = 1;
-	ToyChunks[id][channel].alen = ((int)((double)(chunk->alen >> 2) / PitchScale)) << 2;
-	ToyChunks[id][channel].abuf = Z_Malloc(ToyChunks[id][channel].alen, PU_STATIC, &ToyChunks[id][channel].abuf);
-	ToyChunks[id][channel].volume = MIX_MAX_VOLUME;
+		// Get new buffer
+		ToyChunks[id][channel].allocated = 1;
+		ToyChunks[id][channel].alen = ((int)((double)(chunk->alen >> 2) / PitchScale)) << 2;
+		ToyChunks[id][channel].abuf = Z_Malloc(ToyChunks[id][channel].alen, PU_STATIC, &ToyChunks[id][channel].abuf);
+		ToyChunks[id][channel].volume = MIX_MAX_VOLUME;
 	
-	memset(ToyChunks[id][channel].abuf, 0, ToyChunks[id][channel].alen);
+		memset(ToyChunks[id][channel].abuf, 0, ToyChunks[id][channel].alen);
 	
-	// Get 16-bit pointers from in and out
-	InP = chunk->abuf;
-	OutP = ToyChunks[id][channel].abuf;
+		// Get 16-bit pointers from in and out
+		InP = chunk->abuf;
+		OutP = ToyChunks[id][channel].abuf;
 	
-	// Get limits
-	InLim = chunk->alen >> 2;
-	OutLim = ToyChunks[id][channel].alen >> 2;
+		// Get limits
+		InLim = chunk->alen >> 2;
+		OutLim = ToyChunks[id][channel].alen >> 2;
 	
-	for (OutPos = 0, Position = 0.0; OutPos < OutLim && (int)Position < InLim; Position += PitchScale, OutPos++)
-		for (i = 0; i < 2; i++)
-			OutP[(OutPos * 2) + i] = InP[((int)Position * 2) + i];
+		for (OutPos = 0, Position = 0.0; OutPos < OutLim && (int)Position < InLim; Position += PitchScale, OutPos++)
+			for (i = 0; i < 2; i++)
+				OutP[(OutPos * 2) + i] = InP[((int)Position * 2) + i];
 	
-	// Now play
-	Mix_PlayChannelTimed(channel, &ToyChunks[id][channel], 0, -1);
-#else
-	// Now play
-    Mix_PlayChannelTimed(channel, chunk, 0, -1);
+		// Now play
+		Mix_PlayChannelTimed(channel, &ToyChunks[id][channel], 0, -1);
+	}
+	else
+	{
+#endif
+#ifdef FEATURE_RANDSOUNDPITCH
+		// Now play
+		Mix_PlayChannelTimed(channel, chunk, 0, -1);
+#endif
+#ifdef FEATURE_RANDSOUNDPITCH
+	}
 #endif
 
     channels_playing[channel] = id;

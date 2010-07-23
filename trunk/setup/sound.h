@@ -47,6 +47,9 @@ extern int snd_samplerate;
 
 extern int use_libsamplerate;
 
+// GhostlyDeath <July 22, 2010> -- Random sound pitch
+extern int snd_randomsoundpitch;
+
 void ConfigSound(void);
 
 #endif /* #ifndef SETUP_SOUND_H */
