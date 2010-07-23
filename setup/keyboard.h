@@ -97,6 +97,7 @@ extern int key_weapon8;
 
 extern int key_message_refresh;
 extern int key_demo_quit;
+extern int key_scoreboard;
 
 void ConfigKeyboard(void);
 

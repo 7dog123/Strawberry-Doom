@@ -344,7 +344,7 @@ static default_t extra_defaults_list[] =
     {"key_multi_msgplayer4",        &key_multi_msgplayer[3], DEFAULT_KEY, 0, 0},
     
     {"snd_randomsoundpitch",        &snd_randomsoundpitch, DEFAULT_INT, 0, 0},
-    
+    {"key_scoreboard",              &key_scoreboard, DEFAULT_KEY, 0, 0},
 };
 
 static default_collection_t extra_defaults =
