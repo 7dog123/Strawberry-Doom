@@ -470,122 +470,6 @@ R_DrawVisSprite
     colfunc = basecolfunc;
 }
 
-/* R_ProjectParticle() -- Project particle on screen */
-void R_ProjectParticle(particle_t* particle)
-{
-
-    fixed_t		tr_x;
-    fixed_t		tr_y;
-    
-    fixed_t		gxt;
-    fixed_t		gyt;
-    
-    fixed_t		tx;
-    fixed_t		tz;
-
-    fixed_t		xscale;
-    
-    int			x1;
-    int			x2;
-
-    spritedef_t*	sprdef;
-    spriteframe_t*	sprframe;
-    int			lump;
-    
-    boolean		flip;
-    
-    int			index;
-
-    vissprite_t*	vis;
-    
-    fixed_t		iscale;
-    
-    // transform the origin point
-    tr_x = particle->x - viewx;
-    tr_y = particle->y - viewy;
-	
-    gxt = FixedMul(tr_x,viewcos); 
-    gyt = -FixedMul(tr_y,viewsin);
-    
-    tz = gxt-gyt; 
-
-    // thing is behind view plane?
-    if (tz < MINZ)
-	return;
-    
-    xscale = FixedDiv(projection, tz);
-	
-    gxt = -FixedMul(tr_x,viewsin); 
-    gyt = FixedMul(tr_y,viewcos); 
-    tx = -(gyt+gxt); 
-
-    // too far off the side?
-    if (abs(tx)>(tz<<2))
-	return;
-    
-    // decide which patch to use for sprite relative to player
-    sprdef = &sprites[SPR__PTL + particle->sprite];
-    sprframe = &sprdef->spriteframes[0];
-
-	// use single rotation for all views
-	
-	lump = sprframe->lump[0];
-	flip = (boolean)sprframe->flip[0];
-    
-    // calculate edges of the shape
-    tx -= sprframe->spriteoffset[0];
-    x1 = (centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS;
-
-    // off the right side?
-    if (x1 > viewwidth)
-		return;
-    
-    tx +=  sprframe->spritewidth[0];
-    x2 = ((centerxfrac + FixedMul (tx,xscale) ) >>FRACBITS) - 1;
-
-    // off the left side
-    if (x2 < 0)
-		return;
-    
-    // store information in a vissprite
-    vis = R_NewVisSprite ();
-    vis->mobjflags = particle->flags;
-    vis->scale = xscale<<detailshift;
-    vis->gx = particle->x;
-    vis->gy = particle->y;
-    vis->gz = particle->z;
-    vis->gzt = particle->z + sprframe->spritetopoffset[0];
-    vis->texturemid = vis->gzt - viewz;
-    vis->x1 = x1 < 0 ? 0 : x1;
-    vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
-    iscale = FixedDiv (FRACUNIT, xscale);
-	
-	vis->startfrac = 0;
-	vis->xiscale = iscale;
-
-    if (vis->x1 > x1)
-		vis->startfrac += vis->xiscale*(vis->x1-x1);
-    vis->patch = lump;
-    
-    // get light level
-    if (particle->color & 0x100)
-    {
-    	vis->colormap = colormaps;
-    }
-    else
-    {
-		// diminished light
-		index = xscale>>(LIGHTSCALESHIFT-detailshift);
-
-		if (index >= MAXLIGHTSCALE) 
-			index = MAXLIGHTSCALE-1;
-
-		vis->colormap = spritelights[index];
-	}
-	
-	vis->purecolor = particle->color & 0xFF;
-}
-
 //
 // R_ProjectSprite
 // Generates a vissprite for a thing
@@ -755,7 +639,6 @@ void R_ProjectSprite (mobj_t* thing)
 //
 void R_AddSprites (sector_t* sec)
 {
-	particle_t* particle;
     mobj_t*		thing;
     int			lightnum;
 
@@ -781,8 +664,6 @@ void R_AddSprites (sector_t* sec)
     // Handle all things in sector.
     for (thing = sec->thinglist ; thing ; thing = thing->snext)
 		R_ProjectSprite (thing);
-	for (particle = sec->particlelist; particle; particle = particle->snext)
-		R_ProjectParticle(particle);
 }
 
 

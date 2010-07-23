@@ -122,7 +122,6 @@ void 	P_RemoveMobj (mobj_t* th);
 mobj_t* P_SubstNullMobj (mobj_t* th);
 boolean	P_SetMobjState (mobj_t* mobj, statenum_t state);
 void 	P_MobjThinker (mobj_t* mobj);
-void 	P_ParticleThinker (particle_t* mobj);
 
 void	P_SpawnPuff (fixed_t x, fixed_t y, fixed_t z);
 void 	P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage);
@@ -202,8 +201,6 @@ P_PathTraverse
   int		flags,
   boolean	(*trav) (intercept_t *));
 
-void P_UnsetParticlePosition (particle_t* thing);
-void P_SetParticlePosition (particle_t* thing);
 void P_UnsetThingPosition (mobj_t* thing);
 void P_SetThingPosition (mobj_t* thing);
 
@@ -223,7 +220,6 @@ extern	line_t*		ceilingline;
 
 boolean P_CheckPosition (mobj_t *thing, fixed_t x, fixed_t y);
 boolean P_TryMove (mobj_t* thing, fixed_t x, fixed_t y);
-boolean P_TryParticleMove (particle_t* particle, fixed_t x, fixed_t y);
 boolean P_TeleportMove (mobj_t* thing, fixed_t x, fixed_t y);
 void	P_SlideMove (mobj_t* mo);
 boolean P_CheckSight (mobj_t* t1, mobj_t* t2);
