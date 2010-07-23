@@ -191,6 +191,7 @@ extern int      vanilla_demo_limit;
 extern int snd_musicdevice;
 extern int snd_sfxdevice;
 extern int snd_samplerate;
+extern int snd_randomsoundpitch;
 
 // controls whether to use libsamplerate for sample rate conversions
 
@@ -1081,6 +1082,12 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_KEY(key_multi_msgplayer4,      key_multi_msgplayer[3]),
+    
+    
+    // !
+    // Enable random sound pitch
+    //
+    CONFIG_VARIABLE_KEY(snd_randomsoundpitch, snd_randomsoundpitch),
 };
 
 static default_collection_t extra_defaults =

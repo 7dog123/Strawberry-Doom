@@ -67,6 +67,7 @@ int musicVolume = 15;
 int snd_samplerate = 22050;
 
 int use_libsamplerate = 0;
+int snd_randomsoundpitch = 1;
 
 static int snd_sfxmode;
 static int snd_musmode;
@@ -156,6 +157,11 @@ void ConfigSound(void)
                    TXT_NewSpinControl(&numChannels, 1, 8),
                    TXT_NewLabel("SFX volume"),
                    TXT_NewSpinControl(&sfxVolume, 0, 15),
+                   
+                   // GhostlyDeath <July 22, 2010> -- Random sound pitch
+                   TXT_NewCheckBox("Random Sound Pitch",
+                                   &snd_randomsoundpitch),
+                   
                    NULL);
 
     TXT_SetColumnWidths(music_table, 20, 14);
