@@ -69,7 +69,7 @@ typedef struct
 
 
 memzone_t*	mainzone;
-
+static size_t MemCount;
 
 
 //
@@ -134,6 +134,7 @@ void Z_Free (void* ptr)
 {
     memblock_t*		block;
     memblock_t*		other;
+    int i;
 	
     block = (memblock_t *) ( (byte *)ptr - sizeof(memblock_t));
 
@@ -194,6 +195,7 @@ Z_Malloc
   int		tag,
   void*		user )
 {
+	int i;
     int		extra;
     memblock_t*	start;
     memblock_t* rover;

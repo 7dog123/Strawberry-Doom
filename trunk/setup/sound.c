@@ -67,7 +67,7 @@ int musicVolume = 15;
 int snd_samplerate = 22050;
 
 int use_libsamplerate = 0;
-int snd_randomsoundpitch = 1;
+int snd_randomsoundpitch = 0;
 
 static int snd_sfxmode;
 static int snd_musmode;
