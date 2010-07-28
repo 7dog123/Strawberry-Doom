@@ -149,7 +149,7 @@ static int usegamma = 0;
 // so that the config file can be shared between chocolate
 // doom and doom.exe
 
-static int snd_sbport = 0;
+int snd_sbport = 904;
 static int snd_sbirq = 0;
 static int snd_sbdma = 0;
 static int snd_mport = 0;

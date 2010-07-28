@@ -69,6 +69,8 @@ int snd_samplerate = 22050;
 int use_libsamplerate = 0;
 int snd_randomsoundpitch = 0;
 
+extern int snd_sbport;
+
 static int snd_sfxmode;
 static int snd_musmode;
 
@@ -159,7 +161,7 @@ void ConfigSound(void)
                    TXT_NewSpinControl(&sfxVolume, 0, 15),
                    
                    // GhostlyDeath <July 22, 2010> -- Random sound pitch
-                   TXT_NewCheckBox("Random Sound Pitch",
+                   TXT_NewCheckBox("Random Sound Pitch (Buggy)",
                                    &snd_randomsoundpitch),
                    
                    NULL);
@@ -171,6 +173,9 @@ void ConfigSound(void)
                    mus_mode_control = TXT_NewDropdownList(&snd_musmode,
                                                           musmode_strings,
                                                           NUM_MUSMODES),
+                   TXT_NewLabel("Sound Blaster Port"),
+                   TXT_NewSpinControl(&snd_sbport, 0, 65535),
+                   
                    TXT_NewLabel("Music volume"),
                    TXT_NewSpinControl(&musicVolume, 0, 15),
                    NULL);

@@ -1418,6 +1418,8 @@ static boolean I_OPL_InitMusic(void)
 {
     OPL_SetSampleRate(snd_samplerate);
 
+	// GhostlyDeath <July 27, 2010> -- Show what port we are attempting
+	printf("I_OPL_InitMusic: Trying port 0x%04x\n", opl_io_port);
     if (!OPL_Init(opl_io_port))
     {
         printf("Dude.  The Adlib isn't responding.\n");

@@ -204,6 +204,7 @@ extern int use_libsamplerate;
 // doom and doom.exe
 
 static int snd_sbport = 0;
+extern int opl_io_port;
 static int snd_sbirq = 0;
 static int snd_sbdma = 0;
 static int snd_mport = 0;
@@ -453,7 +454,7 @@ static default_t	doom_defaults_list[] =
     // SoundBlaster I/O port. Unused.
     //
 
-    CONFIG_VARIABLE_INT(snd_sbport,        snd_sbport),
+    CONFIG_VARIABLE_INT(snd_sbport,        opl_io_port),
 
     //!
     // SoundBlaster IRQ.  Unused.
